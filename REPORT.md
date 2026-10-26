@@ -57,7 +57,12 @@ Workflow запускається на push і pull_request з дозволом 
 Додано навчальний `HelloTest` для перевірки тестової інфраструктури.
 Workflow оновлено з `clean compile` до `clean test` на всіх трьох ОС.
 Додано SpotBugs Maven Plugin 4.10.4.1: ціль `check` прив'язано до фази `verify`.
-Workflow оновлено до `clean verify`; Shade ще не налаштовано.
+Workflow оновлено до `clean verify`.
+Додано Shade Plugin 3.6.2: окремий виконуваний `lab-java-1.0.0-all.jar`,
+головний клас `ua.lpnu.kzp.Hello`, `Implementation-Version` із версії POM.
+Навчальний клас підтримує `--version`; без метаданих JAR показує `development`.
+У CI додано звичайний запуск JAR, звіряння версії з POM та публікацію
+артефактів із назвами, що містять ОС і номер запуску. Фінальний тег ще не створено.
 
 ## 6. GitHub Issues і Pull Request
 
@@ -67,8 +72,8 @@ Workflow оновлено до `clean verify`; Shade ще не налаштов�
 | --- | --- | --- |
 | [#1](https://github.com/4iki40k/CPPT-labs-java/issues/1) | Maven і Wrapper | Локально перевірено; PR ще немає |
 | [#2](https://github.com/4iki40k/CPPT-labs-java/issues/2) | Початковий CI | Коміт `267c7fd`: компіляція успішна на трьох ОС; PR ще немає |
-| [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | JUnit успішний у CI; SpotBugs перевірено локально, результат CI для verify ще очікується |
-| [#4](https://github.com/4iki40k/CPPT-labs-java/issues/4) | JAR та артефакти | Заплановано |
+| [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | Verify успішний на трьох ОС; PR ще немає |
+| [#4](https://github.com/4iki40k/CPPT-labs-java/issues/4) | JAR та артефакти | JAR перевірено локально; публікацію артефактів ще потрібно підтвердити в CI |
 | [#5](https://github.com/4iki40k/CPPT-labs-java/issues/5) | Читання й перевірка | Заплановано |
 | [#6](https://github.com/4iki40k/CPPT-labs-java/issues/6) | Показники та звіт | Заплановано |
 | [#7](https://github.com/4iki40k/CPPT-labs-java/issues/7) | Документація та здача | У роботі |
@@ -116,13 +121,20 @@ java -jar hello.jar
 
 Після підключення SpotBugs локально виконано `./mvnw -B -ntp clean verify`:
 один тест успішний, створено звичайний JAR, `BugInstance size is 0`,
-`Error size is 0`, `BUILD SUCCESS`. Результат CI для цього кроку буде
-зафіксовано після перевірки запуску на GitHub.
+`Error size is 0`, `BUILD SUCCESS`.
+[Запуск №40264842900](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40264842900)
+для коміту `aff4f7b` успішно виконав `clean verify` на всіх трьох ОС.
+
+Після підключення Shade локальний `clean verify` успішний: один тест,
+нуль дефектів SpotBugs, створено виконуваний JAR. Звичайний запуск вивів
+`Привіт, Java!`, `--version` — `lab-java 1.0.0`, що відповідає POM.
+Запуск класу поза JAR з `--version` вивів `lab-java development`.
+Публікація артефактів буде підтверджена після запуску CI.
 
 ## 9. Документація
 
-Створено й оновлено README і REPORT. Javadoc до навчального класу ще не додано;
-документацію предметної програми буде перевірено під час її реалізації.
+Створено й оновлено README і REPORT. Додано javadoc до навчального класу
+та його main; документацію предметної програми буде перевірено під час її реалізації.
 
 ## 10. Академічна доброчесність
 
@@ -159,6 +171,10 @@ java -jar hello.jar
 - Запит: додати погоджений SpotBugs, оновити CI до `clean verify`,
   виконати коміт і push. ШІ налаштував плагін без вимкнення правил,
   перевірив локальну збірку та оновив документацію.
+- Запит: додати погоджені Shade, інфраструктурний `--version` до Hello,
+  перевірки запуску та публікацію JAR у CI. ШІ реалізував ці налаштування,
+  додав javadoc до навчального класу й перевірив локальні режими запуску.
+  Версія читається з метаданих JAR, джерелом яких є POM, без дублювання числа в Java.
 
 ### Внесок студента
 
@@ -186,4 +202,5 @@ java -jar hello.jar
 Підтверджено працездатність інструментів JDK і компіляції через Maven Wrapper.
 Підключено навчальний JUnit-тест; початковий CI компіляції успішний на трьох ОС.
 SpotBugs локально не виявив дефектів у поточному навчальному коді.
-Предметна програма, її тести, виконуваний JAR та фінальний реліз ще попереду.
+Виконуваний навчальний JAR локально запускається та повідомляє версію з POM.
+Предметна програма, її тести та фінальний реліз ще попереду.
