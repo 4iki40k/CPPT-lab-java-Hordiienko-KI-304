@@ -83,12 +83,12 @@ Workflow оновлено до `clean verify`.
 
 | Issue | Зміна | Стан |
 | --- | --- | --- |
-| [#1](https://github.com/4iki40k/CPPT-labs-java/issues/1) | Maven і Wrapper | Локально перевірено; PR ще немає |
-| [#2](https://github.com/4iki40k/CPPT-labs-java/issues/2) | Початковий CI | Коміт `267c7fd`: компіляція успішна на трьох ОС; PR ще немає |
-| [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | Verify успішний на трьох ОС; PR ще немає |
+| [#1](https://github.com/4iki40k/CPPT-labs-java/issues/1) | Maven і Wrapper | Перевірено; PR #10 |
+| [#2](https://github.com/4iki40k/CPPT-labs-java/issues/2) | Початковий CI | Коміт `267c7fd`: компіляція успішна на трьох ОС; PR #10 |
+| [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | Verify успішний на трьох ОС; PR #10 |
 | [#4](https://github.com/4iki40k/CPPT-labs-java/issues/4) | JAR та артефакти | JAR перевірено локально та на трьох ОС; три артефакти опубліковано |
-| [#5](https://github.com/4iki40k/CPPT-labs-java/issues/5) | Читання й перевірка | Реалізовано й перевірено локально; CI ще потрібен |
-| [#6](https://github.com/4iki40k/CPPT-labs-java/issues/6) | Показники та звіт | Реалізовано й перевірено локально; CI ще потрібен |
+| [#5](https://github.com/4iki40k/CPPT-labs-java/issues/5) | Читання й перевірка | Локальні тести та CI на трьох ОС успішні; PR #10 |
+| [#6](https://github.com/4iki40k/CPPT-labs-java/issues/6) | Показники та звіт | Локальні тести та CI на трьох ОС успішні; PR #10 |
 | [#7](https://github.com/4iki40k/CPPT-labs-java/issues/7) | Документація та здача | У роботі |
 
 Робоча гілка — `lab01`, базова — `main`.
@@ -192,8 +192,22 @@ GitHub попереджає про застаріле Node.js-середовищ
 - `--help` працює; `--version` виводить `lab-java 1.0.0`, що збігається з POM.
 - Згенеровано javadoc для Main у `target/apidocs/`.
 
-Це результати локального запуску асистентом. Фінальний CI предметної програми
-після цих змін ще не запускався; попередні CI-посилання стосуються навчального JAR.
+### CI предметної програми
+
+[Запуск №40375923177](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40375923177)
+перевірив предметну програму коміту `7f9c730`: на кожній із трьох ОС виконано
+53 тести без помилок, SpotBugs не виявив дефектів, JAR запущено зі звітом,
+`--help` і `--version`. Консольний звіт збігається з файловим.
+macOS стартував із затримкою через чергу GitHub runner, але перевірка успішна.
+
+| ОС | Результат | Артефакт виконуваного JAR |
+| --- | --- | --- |
+| Ubuntu | Успішно | [jar-ubuntu-latest-8](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40375923177/artifacts/12674876714) |
+| Windows | Успішно | [jar-windows-latest-8](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40375923177/artifacts/12675216829) |
+| macOS | Успішно | [jar-macos-latest-8](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40375923177/artifacts/12674828314) |
+
+Артефакти мають обмежений строк зберігання GitHub. Номер 8 позначає CI-збірку,
+версія програми — 1.0.0. Подальші перевірки комітів документації доступні в PR #10.
 
 ## 9. Документація
 
@@ -255,4 +269,5 @@ GitHub попереджає про застаріле Node.js-середовищ
 звіту для консолі й файла. Обробку, форматування та файлові операції розділено
 за методами. Інфраструктура має Wrapper, тести, SpotBugs, виконуваний JAR і CI.
 Технічний огляд виконано, зміни подано в PR #10. Для завершення здачі потрібні
-успішний CI, merge, тег v1.0.0 і підготовка студента до пояснення коду.
+merge, тег v1.0.0 і підготовка студента до пояснення коду; CI предметної програми
+вже успішний на трьох ОС.
