@@ -4,9 +4,13 @@ import java.util.Locale;
 
 /** Незмінний запис про комунальний показник. */
 public final class UtilityReading {
+    /** Назва лічильника без крайових пробілів. */
     private final String meter;
+    /** Дата як непорожній текст. */
     private final String date;
+    /** Скінченне невід'ємне споживання. */
     private final double value;
+    /** Скінченний невід'ємний тариф. */
     private final double tariff;
 
 
@@ -43,7 +47,13 @@ public final class UtilityReading {
         this.tariff = tariff;
     }
 
-    /** Перевіряє обов’язкові текстові поля. */
+    /**
+     * Перевіряє обов’язкові текстові поля за спільними правилами конструктора та фабрики.
+     *
+     * @param meter назва лічильника
+     * @param date дата як текст
+     * @throws IllegalArgumentException якщо поле null або порожнє
+     */
     private static void validateTextFields(String meter, String date) {
         if (meter == null || date == null) {
             throw new IllegalArgumentException(
@@ -87,22 +97,34 @@ public final class UtilityReading {
         }
     }
 
-    /** @return назва лічильника */
+    /**
+     * Читає назву лічильника.
+     * @return назва лічильника
+     */
     public String getMeter() {
         return meter;
     }
 
-    /** @return дата як текст */
+    /**
+     * Читає дату запису.
+     * @return дата як текст
+     */
     public String getDate() {
         return date;
     }
 
-    /** @return споживання */
+    /**
+     * Читає споживання.
+     * @return споживання
+     */
     public double getValue() {
         return value;
     }
 
-    /** @return тариф */
+    /**
+     * Читає тариф.
+     * @return тариф
+     */
     public double getTariff() {
         return tariff;
     }

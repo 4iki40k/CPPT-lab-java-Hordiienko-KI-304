@@ -37,7 +37,7 @@ public final class Main {
      */
     static int run(String[] args, PrintStream out, PrintStream err) {
         if (args.length == 1 && "--help".equals(args[0])) {
-            out.printf("Використання: java -jar lab-java-1.0.0-all.jar [--input <файл>] [--output <файл>]%n"
+            out.printf("Використання: java -jar <файл.jar> [--input <файл>] [--output <файл>]%n"
                     + "  --input    Вхідний CSV, типово data/input.csv%n"
                     + "  --output   Файл звіту, типово out/report.txt%n"
                     + "  --help     Показати довідку (окремий режим)%n"
