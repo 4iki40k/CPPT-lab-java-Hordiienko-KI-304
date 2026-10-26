@@ -1,0 +1,15 @@
+# Результати компіляції та пакування.
+*.class
+*.jar
+target/
+out/
+
+# Локальні файли IDE та ОС.
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Wrapper JAR, якщо його згенерує Maven, є частиною інфраструктури.
+!.mvn/wrapper/maven-wrapper.jar
