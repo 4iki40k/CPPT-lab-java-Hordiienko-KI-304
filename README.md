@@ -1,6 +1,6 @@
 # Лабораторні роботи з Java
 
-[![Java CI](https://github.com/4iki40k/CPPT-labs-java/actions/workflows/ci.yml/badge.svg?branch=lab01)](https://github.com/4iki40k/CPPT-labs-java/actions/workflows/ci.yml?query=branch%3Alab01)
+[![Java CI](https://github.com/4iki40k/CPPT-labs-java/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/4iki40k/CPPT-labs-java/actions/workflows/ci.yml?query=branch%3Amain)
 
 Репозиторій: https://github.com/4iki40k/CPPT-labs-java
 
@@ -115,7 +115,9 @@ Shade Plugin створює окремий `*-all.jar` з головним кл�
 - `REPORT.md` містить звіт і облік допомоги ШІ; правила ролей — у `ai/`.
 
 Створено [Issues #1–#7](https://github.com/4iki40k/CPPT-labs-java/issues)
-і робочу гілку `lab01`, опубліковану на GitHub. Pull Request ще не відкрито.
+і робочу гілку `lab01`, опубліковану на GitHub.
+Лабораторна №1 подана через [Pull Request #10](https://github.com/4iki40k/CPPT-labs-java/pull/10)
+із цієї гілки в `main`.
 
 ## Тестування та CI
 
@@ -150,4 +152,13 @@ CI компілює код, запускає тести, пакує JAR і ви�
 артефакт у секції Artifacts, розпакуйте ZIP і запустіть JAR через Java 21.
 Номер запуску CI не є версією програми. Git-тег `v1.0.0` буде створено
 лише після завершення лабораторної та merge.
-Badge вище показує стан робочої гілки `lab01`; після merge його буде оновлено.
+Badge вище показує стан стабільної гілки `main`. Стан змін до merge дивіться
+в перевірках Pull Request.
+
+Якщо український текст у Windows PowerShell спотворюється, явно виберіть UTF-8
+для консолі та потоків Java (так само налаштовано Windows-крок CI):
+
+```powershell
+$OutputEncoding = [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar target/lab-java-1.0.0-all.jar
+```
