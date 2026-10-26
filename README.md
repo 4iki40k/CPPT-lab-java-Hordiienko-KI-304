@@ -73,7 +73,7 @@ Maven записує результати в `target/`, який не входи
 - `REPORT.md` містить звіт і облік допомоги ШІ; правила ролей — у `ai/`.
 
 Створено [Issues #1–#7](https://github.com/4iki40k/CPPT-labs-java/issues)
-і локальну робочу гілку `lab01`. Pull Request ще не відкрито.
+і робочу гілку `lab01`, опубліковану на GitHub. Pull Request ще не відкрито.
 
 ## Початковий CI
 

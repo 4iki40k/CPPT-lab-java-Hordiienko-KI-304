@@ -62,7 +62,7 @@ JUnit 5, SpotBugs і Shade ще не налаштовано.
 | Issue | Зміна | Стан |
 | --- | --- | --- |
 | [#1](https://github.com/4iki40k/CPPT-labs-java/issues/1) | Maven і Wrapper | Локально перевірено; PR ще немає |
-| [#2](https://github.com/4iki40k/CPPT-labs-java/issues/2) | Початковий CI | Workflow додано; результат запуску ще не підтверджено |
+| [#2](https://github.com/4iki40k/CPPT-labs-java/issues/2) | Початковий CI | Коміт `267c7fd`: компіляція успішна на трьох ОС; PR ще немає |
 | [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | Заплановано |
 | [#4](https://github.com/4iki40k/CPPT-labs-java/issues/4) | JAR та артефакти | Заплановано |
 | [#5](https://github.com/4iki40k/CPPT-labs-java/issues/5) | Читання й перевірка | Заплановано |
@@ -97,8 +97,12 @@ java -jar hello.jar
 - `java -cp target/classes ua.lpnu.kzp.Hello` — `Привіт, Java!`.
 
 `-B` вмикає пакетний режим, `-ntp` прибирає індикатори завантажень.
-Автоматизованих тестів поки немає. Результат початкового GitHub Actions
-буде зафіксовано після запуску на GitHub.
+Автоматизованих тестів поки немає.
+
+Початковий [запуск GitHub Actions №40262369303](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40262369303)
+для коміту `267c7fd` завершився успішно на Ubuntu, Windows і macOS.
+На кожній ОС виконано `clean compile` через Wrapper із JDK 21 Temurin.
+Цей запуск не перевіряє тести, виконання програми чи пакування JAR.
 
 ## 9. Документація
 
