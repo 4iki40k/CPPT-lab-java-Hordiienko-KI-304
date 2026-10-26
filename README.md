@@ -7,8 +7,9 @@ Java-частина курсу «Кросплатформні засоби пр�
 
 ## Поточний стан
 
-Виконано навчальну перевірку JDK: компіляцію, запуск класу та виконуваного JAR.
-Maven, тести й GitHub Actions ще не налаштовано. Предметну програму ще не реалізовано.
+Виконано навчальну перевірку JDK та налаштовано компіляцію через Maven Wrapper
+(Maven 3.9.11). Тести й GitHub Actions ще не налаштовано.
+Предметну програму ще не реалізовано.
 
 ## Лабораторна №1 — варіант 9
 
@@ -35,20 +36,31 @@ meter;date;value;tariff
 Потрібен JDK 21. Із кореня репозиторію:
 
 ```bash
-javac -encoding UTF-8 Hello.java
-java Hello
-jar --create --file hello.jar --main-class Hello Hello.class
-java -jar hello.jar
+./mvnw clean compile
+java -cp target/classes ua.lpnu.kzp.Hello
 ```
 
-Очікуваний вивід обох запусків:
+На Windows замість `./mvnw` використовуйте `.\mvnw.cmd`.
+Перевірити версії Maven і Java можна через `./mvnw --version`.
+Wrapper завантажує Maven під час першого запуску, але не встановлює JDK.
+
+Якщо у Linux використовується старіша Java, у поточному терміналі оберіть JDK 21
+(на цій машині він установлений за наведеним шляхом):
+
+```bash
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+export PATH="$JAVA_HOME/bin:$PATH"
+```
+
+Очікуваний вивід запуску класу:
 
 ```text
 Привіт, Java!
 ```
 
-`Hello.class` і `hello.jar` генеруються локально й не входять до репозиторію.
-Команди Maven та запуск предметної програми буде додано після їх перевірки.
+Клас розміщено в `src/main/java/ua/lpnu/kzp/Hello.java`.
+Maven записує результати в `target/`, який не входить до репозиторію.
+Пакування виконуваного JAR через Maven ще не налаштовано.
 
 ## Організація роботи
 
@@ -57,4 +69,5 @@ java -jar hello.jar
 - Завдання й дефекти фіксуються через GitHub Issues.
 - `REPORT.md` містить звіт і облік допомоги ШІ; правила ролей — у `ai/`.
 
-Це погоджений порядок роботи; Issues, робочі гілки та PR ще потрібно створити.
+Створено [Issues #1–#7](https://github.com/4iki40k/CPPT-labs-java/issues)
+і локальну робочу гілку `lab01`. Pull Request ще не відкрито.
