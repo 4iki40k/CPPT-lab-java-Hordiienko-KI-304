@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Locale;
 
 /** Консольний звіт про комунальні показники, лабораторна №1, варіант 9. */
@@ -62,7 +63,7 @@ public final class Main {
                 if (index + 1 >= args.length || args[index + 1].isBlank()
                         || args[index + 1].startsWith("--")) {
                     throw new IllegalArgumentException("Не вказано шлях після " + option);
-                }
+                        }
                 Path path = Path.of(args[++index]);
                 if ("--input".equals(option)) {
                     if (inputSpecified) {
@@ -83,7 +84,7 @@ public final class Main {
             if (input.toAbsolutePath().normalize().equals(output.toAbsolutePath().normalize())
                     || (Files.exists(output) && Files.isSameFile(input, output))) {
                 throw new IllegalArgumentException("Вхідний файл і файл звіту мають бути різними");
-            }
+                    }
             List<String> lines = Files.readAllLines(input, StandardCharsets.UTF_8);
             String report = buildReport(lines);
             writeReport(output, report);
@@ -105,37 +106,12 @@ public final class Main {
      * @return порожній рядок для коректного запису, інакше причина відхилення
      */
     static String validateLine(String line) {
-        String[] fields = line.split(";", -1); // розділення полів
-        if (fields.length != 4) {
-            return "Помилка: потрібно рівно 4 поля";
-        }
-
-        // Початкова валідація написана студентом за консультаціями ШІ.
-        String meter = fields[0].strip();
-        String date = fields[1].strip();
-        // перевірка на порожність
-        if (meter.isBlank() || date.isBlank()) {
-            return "Помилка: назва лічильника або дата порожня";
-        }
-
-        String valueText = fields[2].strip();
-        String tariffText = fields[3].strip();
         try {
-            double value = Double.parseDouble(valueText);
-            double tariff = Double.parseDouble(tariffText);
-            if (!Double.isFinite(value) || !Double.isFinite(tariff)) {
-                return "Помилка: споживання та тариф мають бути скінченними числами";
-            }
-            if (value < 0 || tariff < 0) {
-                return "Помилка: споживання та тариф не можуть бути від’ємними";
-            }
-            if (!Double.isFinite(value * tariff)) {
-                return "Помилка: вартість запису перевищує допустимий діапазон";
-            }
-        } catch (NumberFormatException exception) {
-            return "Помилка: споживання або тариф має неправильний числовий формат";
+            UtilityReading.fromCsv(line);
+            return "";
+        } catch (IllegalArgumentException exception) {
+            return exception.getMessage();
         }
-        return "";
     }
 
     /**
@@ -146,39 +122,47 @@ public final class Main {
      * @return звіт із показниками, номерами й причинами пропуску хибних рядків
      */
     static String buildReport(List<String> lines) {
-        int validCount = 0;
+        List<UtilityReading> readings = new ArrayList<>();
         int errorCount = 0;
         double totalValue = 0.0;
         double totalCost = 0.0;
-        double maxValue = 0.0;
         StringBuilder errors = new StringBuilder();
 
+        // перевірки
         for (int index = 0; index < lines.size(); index++) {
-            String line = lines.get(index);
-            String error = validateLine(line);
-            if (error.isEmpty()) {
-                String[] fields = line.split(";", -1);
-                double value = Double.parseDouble(fields[2].strip());
-                double tariff = Double.parseDouble(fields[3].strip());
-                double nextValue = totalValue + value;
-                double nextCost = totalCost + value * tariff;
+            try {
+                UtilityReading reading =
+                    UtilityReading.fromCsv(lines.get(index));
+
+                ConsumptionCost amounts = reading.consumptionCost();
+
+                double nextValue = totalValue + amounts.consumption();
+                double nextCost = totalCost + amounts.cost();
+
                 if (!Double.isFinite(nextValue) || !Double.isFinite(nextCost)) {
-                    error = "Помилка: сума перевищує допустимий діапазон";
-                } else {
-                    validCount++;
-                    totalValue = nextValue;
-                    totalCost = nextCost;
-                    maxValue = Math.max(maxValue, value);
+                    throw new IllegalArgumentException(
+                            "Помилка: сума перевищує допустимий діапазон");
                 }
-            }
-            if (!error.isEmpty()) {
+
+                readings.add(reading);
+                totalValue = nextValue;
+                totalCost = nextCost;
+            } catch (IllegalArgumentException exception) {
                 errorCount++;
-                errors.append(String.format(Locale.ROOT, "Рядок %d: %s%n", index + 1, error));
+                errors.append(String.format(Locale.ROOT,
+                            "Рядок %d: %s%n",
+                            index + 1, exception.getMessage()));
             }
         }
-        return formatReport(validCount, totalValue, totalCost, maxValue, errorCount, errors.toString());
-    }
 
+        double maxValue = 0.0;
+        for (UtilityReading reading : readings) {
+            maxValue = Math.max(maxValue, reading.getValue());
+        }
+
+        return formatReport(readings.size(), totalValue, totalCost,
+                maxValue, errorCount, errors.toString());
+    }
     /**
      * Форматує показники незалежно від локалі, без файлового чи консольного виводу.
      *
@@ -195,7 +179,7 @@ public final class Main {
         String maximum = validCount == 0 ? "немає даних" : String.format(Locale.ROOT, "%.2f", maxValue);
         return String.format(Locale.ROOT,
                 "Коректних записів: %d%nСумарне споживання: %.2f%nЗагальна вартість: %.2f%n"
-                        + "Найбільше споживання: %s%nПомилок: %d%n%s",
+                + "Найбільше споживання: %s%nПомилок: %d%n%s",
                 validCount, totalValue, totalCost, maximum, errorCount, errors);
     }
 
