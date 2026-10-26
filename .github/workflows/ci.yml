@@ -43,10 +43,16 @@ jobs:
           $OutputEncoding = [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
           $jars = @(Get-ChildItem -Path target -Filter '*-all.jar')
           if ($jars.Count -ne 1) { throw 'Expected exactly one executable JAR' }
-          $greeting = java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName
+          $report = java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName
           if ($LASTEXITCODE -ne 0) { throw 'JAR launch failed' }
-          if (($greeting -join "`n").Trim() -cne 'Привіт, Java!') { throw 'Unexpected greeting or console encoding error' }
-          Write-Output $greeting
+          if ($report -cnotcontains 'Коректних записів: 3') { throw 'Unexpected report or console encoding error' }
+          $savedReport = Get-Content -LiteralPath out/report.txt -Raw -Encoding utf8
+          if (($report -join "`n").Replace("`r", '').TrimEnd() -cne $savedReport.Replace("`r", '').TrimEnd()) {
+            throw 'Console and file reports differ'
+          }
+          Write-Output $report
+          java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName --help
+          if ($LASTEXITCODE -ne 0) { throw 'JAR help command failed' }
           $version = .\mvnw.cmd -q help:evaluate '-Dexpression=project.version' '-DforceStdout'
           if ($LASTEXITCODE -ne 0) { throw 'Cannot read Maven project version' }
           $actual = java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName --version
@@ -62,7 +68,11 @@ jobs:
           jars=(target/*-all.jar)
           test "${#jars[@]}" -eq 1
           test -f "${jars[0]}"
-          java -jar "${jars[0]}"
+          report=$(java -jar "${jars[0]}")
+          test "$report" = "$(cat out/report.txt)"
+          echo "$report" | grep -Fx 'Коректних записів: 3'
+          echo "$report"
+          java -jar "${jars[0]}" --help
           version=$(./mvnw -q help:evaluate -Dexpression=project.version -DforceStdout)
           actual=$(java -jar "${jars[0]}" --version)
           test "$actual" = "lab-java $version"
