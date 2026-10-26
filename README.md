@@ -144,8 +144,9 @@ Shade Plugin створює окремий `*-all.jar` з головним кл�
 Лабораторна №1 прийнята через [Pull Request #10](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/pull/10)
 із цієї гілки в `main`.
 Лабораторна №2 виконується в `lab02` за [Issues #12–#16](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/issues).
-Відкрито [PR #17](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/pull/17)
-у main; merge і тег v1.1.0 ще не виконані.
+Зміни подано через [PR #17](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/pull/17)
+у main. Прийнята версія лабораторної №2 фіксується тегом
+[v1.1.0](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/tree/v1.1.0).
 
 ## Тестування та CI
 
