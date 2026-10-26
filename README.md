@@ -1,8 +1,10 @@
 # Лабораторні роботи з Java
 
-[![Java CI](https://github.com/4iki40k/CPPT-labs-java/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/4iki40k/CPPT-labs-java/actions/workflows/ci.yml?query=branch%3Amain)
+[![Java CI](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/workflows/ci.yml?query=branch%3Amain)
 
-Репозиторій: https://github.com/4iki40k/CPPT-labs-java
+Репозиторій: https://github.com/4iki40k/kzp-lab01-hordiienko
+
+Студент: Hordiienko, група КІ-304.
 
 Java-частина курсу «Кросплатформні засоби програмування». Python-частина
 ведеться окремо.
@@ -13,7 +15,7 @@ Java-частина курсу «Кросплатформні засоби пр�
 Проєкт використовує Java 21, Maven Wrapper 3.9.11, JUnit 5, SpotBugs і Shade.
 GitHub Actions налаштовано на `clean verify`, запуск JAR і публікацію артефактів
 на Ubuntu, Windows і macOS.
-[Предметна програма перевірена на трьох ОС](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40375923177):
+[Предметна програма перевірена на трьох ОС](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/runs/40375923177):
 53 тести, запуск JAR, версія та публікація артефактів успішні.
 
 ## Лабораторна №1 — варіант 9
@@ -67,7 +69,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 ```
 
 Головний клас — `src/main/java/ua/lpnu/kzp/Main.java`.
-`Hello.java` залишено як навчальний приклад першого етапу, він не є точкою входу JAR.
+Навчальний `Hello.java` видалено з поточної версії; його можна знайти в історії Git.
 Maven записує результати в `target/`, який не входить до репозиторію.
 
 ## Виконуваний JAR
@@ -116,9 +118,9 @@ Shade Plugin створює окремий `*-all.jar` з головним кл�
 - Завдання й дефекти фіксуються через GitHub Issues.
 - `REPORT.md` містить звіт і облік допомоги ШІ; правила ролей — у `ai/`.
 
-Створено [Issues #1–#7](https://github.com/4iki40k/CPPT-labs-java/issues)
+Створено [Issues #1–#7](https://github.com/4iki40k/kzp-lab01-hordiienko/issues)
 і робочу гілку `lab01`, опубліковану на GitHub.
-Лабораторна №1 подана через [Pull Request #10](https://github.com/4iki40k/CPPT-labs-java/pull/10)
+Лабораторна №1 прийнята через [Pull Request #10](https://github.com/4iki40k/kzp-lab01-hordiienko/pull/10)
 із цієї гілки в `main`.
 
 ## Тестування та CI

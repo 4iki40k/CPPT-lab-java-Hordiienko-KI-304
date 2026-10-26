@@ -8,7 +8,9 @@
 - Лабораторна робота: №1.
 - Варіант: 9 — комунальні показники.
 - Операційна система: Linux.
-- Репозиторій: https://github.com/4iki40k/CPPT-labs-java
+- Студент: Hordiienko.
+- Група: КІ-304.
+- Репозиторій: https://github.com/4iki40k/kzp-lab01-hordiienko
 
 ## 2. Мета роботи
 
@@ -48,7 +50,8 @@
 - `writeReport` створює каталог за потреби й записує UTF-8 файл.
 
 `data/input.csv` містить три коректні й два хибні записи з українським текстом.
-`Hello.java` збережено як навчальний приклад, але він більше не запускається з JAR.
+Навчальний `Hello.java` видалено після завершення інфраструктури; його історія
+збережена в Git. У поточній версії точка входу лише `Main`.
 Власні предметні класи поки не вводилися — це основа для лабораторної №2.
 
 ## 5. Інфраструктура
@@ -73,7 +76,7 @@ Workflow оновлено до `clean verify`.
 Додано Shade Plugin 3.6.2: окремий виконуваний `lab-java-1.0.0-all.jar`,
 перший головний клас `ua.lpnu.kzp.Hello`, `Implementation-Version` із версії POM.
 Після реалізації програми точку входу змінено на `ua.lpnu.kzp.Main`.
-Обидва класи підтримують `--version`; без метаданих JAR показують `development`.
+Main підтримує `--version`; без метаданих JAR показує `development`.
 У CI додано звичайний запуск JAR, звіряння версії з POM та публікацію
 артефактів із назвами, що містять ОС і номер запуску. Фінальний тег ще не створено.
 
@@ -83,17 +86,17 @@ Workflow оновлено до `clean verify`.
 
 | Issue | Зміна | Стан |
 | --- | --- | --- |
-| [#1](https://github.com/4iki40k/CPPT-labs-java/issues/1) | Maven і Wrapper | Перевірено; PR #10 |
-| [#2](https://github.com/4iki40k/CPPT-labs-java/issues/2) | Початковий CI | Коміт `267c7fd`: компіляція успішна на трьох ОС; PR #10 |
-| [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | Verify успішний на трьох ОС; PR #10 |
-| [#4](https://github.com/4iki40k/CPPT-labs-java/issues/4) | JAR та артефакти | JAR перевірено локально та на трьох ОС; три артефакти опубліковано |
-| [#5](https://github.com/4iki40k/CPPT-labs-java/issues/5) | Читання й перевірка | Локальні тести та CI на трьох ОС успішні; PR #10 |
-| [#6](https://github.com/4iki40k/CPPT-labs-java/issues/6) | Показники та звіт | Локальні тести та CI на трьох ОС успішні; PR #10 |
-| [#7](https://github.com/4iki40k/CPPT-labs-java/issues/7) | Документація та здача | У роботі |
+| [#1](https://github.com/4iki40k/kzp-lab01-hordiienko/issues/1) | Maven і Wrapper | Перевірено; PR #10 |
+| [#2](https://github.com/4iki40k/kzp-lab01-hordiienko/issues/2) | Початковий CI | Коміт `267c7fd`: компіляція успішна на трьох ОС; PR #10 |
+| [#3](https://github.com/4iki40k/kzp-lab01-hordiienko/issues/3) | JUnit і SpotBugs | Verify успішний на трьох ОС; PR #10 |
+| [#4](https://github.com/4iki40k/kzp-lab01-hordiienko/issues/4) | JAR та артефакти | JAR перевірено локально та на трьох ОС; три артефакти опубліковано |
+| [#5](https://github.com/4iki40k/kzp-lab01-hordiienko/issues/5) | Читання й перевірка | Локальні тести та CI на трьох ОС успішні; PR #10 |
+| [#6](https://github.com/4iki40k/kzp-lab01-hordiienko/issues/6) | Показники та звіт | Локальні тести та CI на трьох ОС успішні; PR #10 |
+| [#7](https://github.com/4iki40k/kzp-lab01-hordiienko/issues/7) | Документація та здача | У роботі |
 
 Робоча гілка — `lab01`, базова — `main`.
-[Pull Request #10](https://github.com/4iki40k/CPPT-labs-java/pull/10)
-пов'язує зміни з Issues #1–#6, #8 і #9 через `Closes #N`.
+[Pull Request #10](https://github.com/4iki40k/kzp-lab01-hordiienko/pull/10)
+прийнято в main; він закрив Issues #1–#6, #8 і #9 через `Closes #N`.
 Коміт предметної програми — `7f9c730`; інфраструктура додавалася окремими
 комітами, які видно в історії PR. Issue #7 залишається для завершення здачі й тегу.
 
@@ -138,35 +141,35 @@ java -jar target/lab-java-1.0.0-all.jar --input data/input.csv --output out/repo
 Навчальний тест `assertEquals(4, 2 + 2)` не перевіряє предметну програму
 і згодом був замінений предметними тестами. Результати — у `target/surefire-reports/`.
 
-Початковий [запуск GitHub Actions №40262369303](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40262369303)
+Початковий [запуск GitHub Actions №40262369303](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/runs/40262369303)
 для коміту `267c7fd` завершився успішно на Ubuntu, Windows і macOS.
 На кожній ОС виконано `clean compile` через Wrapper із JDK 21 Temurin.
 Цей запуск не перевіряє тести, виконання програми чи пакування JAR.
 
-Після підключення JUnit [запуск №40263754859](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40263754859)
+Після підключення JUnit [запуск №40263754859](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/runs/40263754859)
 для коміту `81e2bba` успішно виконав `clean test` на всіх трьох ОС.
 
 Після підключення SpotBugs локально виконано `./mvnw -B -ntp clean verify`:
 один тест успішний, створено звичайний JAR, `BugInstance size is 0`,
 `Error size is 0`, `BUILD SUCCESS`.
-[Запуск №40264842900](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40264842900)
+[Запуск №40264842900](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/runs/40264842900)
 для коміту `aff4f7b` успішно виконав `clean verify` на всіх трьох ОС.
 
 Після підключення Shade локальний `clean verify` успішний: один тест,
 нуль дефектів SpotBugs, створено виконуваний JAR. Звичайний запуск вивів
 `Привіт, Java!`, `--version` — `lab-java 1.0.0`, що відповідає POM.
 Запуск класу поза JAR з `--version` вивів `lab-java development`.
-У [запуску №40265488466](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40265488466)
+У [запуску №40265488466](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/runs/40265488466)
 Ubuntu та macOS успішно перевірили JAR і опублікували артефакти.
 На Windows збірка й запуск JAR успішні, але допоміжний виклик Maven для
 читання версії POM завершився помилкою. Дефект оформлено як
-[Issue #8](https://github.com/4iki40k/CPPT-labs-java/issues/8).
+[Issue #8](https://github.com/4iki40k/kzp-lab01-hordiienko/issues/8).
 У Windows-лозі також спотворено український вивід —
-[Issue #9](https://github.com/4iki40k/CPPT-labs-java/issues/9).
+[Issue #9](https://github.com/4iki40k/kzp-lab01-hordiienko/issues/9).
 Погоджене виправлення: Maven-параметри в лапках, явне UTF-8 для Java
 та PowerShell і перевірка точного привітання.
 
-Повторний [запуск №40265865855](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40265865855)
+Повторний [запуск №40265865855](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/runs/40265865855)
 для коміту `377a725` успішний на Ubuntu, Windows і macOS. Windows-лог містить
 неспотворені `Привіт, Java!` та `lab-java 1.0.0`. Опубліковано три артефакти:
 `jar-ubuntu-latest-6`, `jar-windows-latest-6`, `jar-macos-latest-6`.
@@ -194,7 +197,7 @@ GitHub попереджає про застаріле Node.js-середовищ
 
 ### CI предметної програми
 
-[Запуск №40375923177](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40375923177)
+[Запуск №40375923177](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/runs/40375923177)
 перевірив предметну програму коміту `7f9c730`: на кожній із трьох ОС виконано
 53 тести без помилок, SpotBugs не виявив дефектів, JAR запущено зі звітом,
 `--help` і `--version`. Консольний звіт збігається з файловим.
@@ -202,9 +205,9 @@ macOS стартував із затримкою через чергу GitHub ru
 
 | ОС | Результат | Артефакт виконуваного JAR |
 | --- | --- | --- |
-| Ubuntu | Успішно | [jar-ubuntu-latest-8](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40375923177/artifacts/12674876714) |
-| Windows | Успішно | [jar-windows-latest-8](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40375923177/artifacts/12675216829) |
-| macOS | Успішно | [jar-macos-latest-8](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40375923177/artifacts/12674828314) |
+| Ubuntu | Успішно | [jar-ubuntu-latest-8](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/runs/40375923177/artifacts/12674876714) |
+| Windows | Успішно | [jar-windows-latest-8](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/runs/40375923177/artifacts/12675216829) |
+| macOS | Успішно | [jar-macos-latest-8](https://github.com/4iki40k/kzp-lab01-hordiienko/actions/runs/40375923177/artifacts/12674828314) |
 
 Артефакти мають обмежений строк зберігання GitHub. Номер 8 позначає CI-збірку,
 версія програми — 1.0.0. Подальші перевірки комітів документації доступні в PR #10.
@@ -227,9 +230,11 @@ macOS стартував із затримкою через чергу GitHub ru
 Це свідомі рішення для лабораторної №1, а не підтвердження придатності
 для виробничої системи. Це AI-assisted огляд, не незалежне рев'ю іншого студента.
 
-Формальний пункт для уточнення з викладачем: методичка вимагає номер роботи
-та прізвище в назві репозиторію. За рішенням студента використано спільний
-репозиторій Java-лабораторних `CPPT-labs-java`; його назву не змінювали.
+На прохання студента репозиторій перейменовано на `kzp-lab01-hordiienko`:
+назва містить номер роботи та прізвище відповідно до методички.
+Оновлено origin, badge й посилання в документації. Після видалення навчального
+Hello локальний `clean verify` успішний: 53 тести, 0 дефектів SpotBugs;
+JAR зберігає версію 1.0.0. Ці фінальні зміни ще потребують публікації й CI.
 
 ## 10. Академічна доброчесність
 
@@ -268,6 +273,6 @@ macOS стартував із затримкою через чергу GitHub ru
 Створено програму варіанта 9 з валідацією, чотирма показниками та одним текстом
 звіту для консолі й файла. Обробку, форматування та файлові операції розділено
 за методами. Інфраструктура має Wrapper, тести, SpotBugs, виконуваний JAR і CI.
-Технічний огляд виконано, зміни подано в PR #10. Для завершення здачі потрібні
-merge, тег v1.0.0 і підготовка студента до пояснення коду; CI предметної програми
-вже успішний на трьох ОС.
+Технічний огляд виконано, PR #10 прийнято, CI предметної програми успішний
+на трьох ОС. Для завершення здачі потрібні фінальні правки документації,
+тег v1.0.0 і підготовка студента до пояснення коду.
