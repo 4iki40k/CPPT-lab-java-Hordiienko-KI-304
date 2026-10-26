@@ -53,7 +53,10 @@ Wrapper 3.3.4 типу `only-script`; Wrapper запускає Maven 3.9.11.
 Додано початковий CI: матриця Ubuntu, Windows і macOS, JDK 21 Temurin,
 кеш Maven та `clean compile` через відповідний для ОС скрипт Wrapper.
 Workflow запускається на push і pull_request з дозволом `contents: read`.
-JUnit 5, SpotBugs і Shade ще не налаштовано.
+Підключено JUnit Jupiter 5.12.2 як залежність зі scope `test` та Surefire 3.5.2.
+Додано навчальний `HelloTest` для перевірки тестової інфраструктури.
+Workflow оновлено з `clean compile` до `clean test` на всіх трьох ОС.
+SpotBugs і Shade ще не налаштовано.
 
 ## 6. GitHub Issues і Pull Request
 
@@ -63,7 +66,7 @@ JUnit 5, SpotBugs і Shade ще не налаштовано.
 | --- | --- | --- |
 | [#1](https://github.com/4iki40k/CPPT-labs-java/issues/1) | Maven і Wrapper | Локально перевірено; PR ще немає |
 | [#2](https://github.com/4iki40k/CPPT-labs-java/issues/2) | Початковий CI | Коміт `267c7fd`: компіляція успішна на трьох ОС; PR ще немає |
-| [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | Заплановано |
+| [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | JUnit перевірено локально; SpotBugs ще не додано |
 | [#4](https://github.com/4iki40k/CPPT-labs-java/issues/4) | JAR та артефакти | Заплановано |
 | [#5](https://github.com/4iki40k/CPPT-labs-java/issues/5) | Читання й перевірка | Заплановано |
 | [#6](https://github.com/4iki40k/CPPT-labs-java/issues/6) | Показники та звіт | Заплановано |
@@ -97,7 +100,10 @@ java -jar hello.jar
 - `java -cp target/classes ua.lpnu.kzp.Hello` — `Привіт, Java!`.
 
 `-B` вмикає пакетний режим, `-ntp` прибирає індикатори завантажень.
-Автоматизованих тестів поки немає.
+Після підключення JUnit асистент виконав `./mvnw -B -ntp clean test`:
+`Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`, `BUILD SUCCESS`.
+Навчальний тест `assertEquals(4, 2 + 2)` не перевіряє предметну програму
+і буде замінений тестами її поведінки. Результати — у `target/surefire-reports/`.
 
 Початковий [запуск GitHub Actions №40262369303](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40262369303)
 для коміту `267c7fd` завершився успішно на Ubuntu, Windows і macOS.
@@ -138,6 +144,9 @@ java -jar hello.jar
 - Запит: налаштувати погоджений початковий CI та опублікувати гілку `lab01`.
   ШІ підготував workflow компіляції на трьох ОС і badge у README.
   Студент погодив конфігурацію та push; результат CI перевіряється окремо.
+- Запит: підключити погоджені JUnit 5, Surefire та навчальний тест,
+  оновити CI до `clean test`. ШІ налаштував тестову інфраструктуру та перевірив
+  локальний запуск одного тесту. Предметних тестів поки немає.
 
 ### Внесок студента
 
@@ -163,4 +172,5 @@ java -jar hello.jar
 ## 11. Висновки
 
 Підтверджено працездатність інструментів JDK і компіляції через Maven Wrapper.
-Предметна програма, автоматичні тести, CI та фінальний реліз ще попереду.
+Підключено навчальний JUnit-тест; початковий CI компіляції успішний на трьох ОС.
+Предметна програма, її тести, SpotBugs, пакування та фінальний реліз ще попереду.
