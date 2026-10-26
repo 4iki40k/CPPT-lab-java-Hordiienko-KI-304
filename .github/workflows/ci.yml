@@ -8,8 +8,8 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    name: Test on ${{ matrix.os }}
+  verify:
+    name: Verify on ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
@@ -27,11 +27,11 @@ jobs:
           java-version: '21'
           cache: maven
 
-      - name: Test on Windows
+      - name: Verify on Windows
         if: runner.os == 'Windows'
         shell: pwsh
-        run: .\mvnw.cmd -B clean test
+        run: .\mvnw.cmd -B clean verify
 
-      - name: Test on Unix
+      - name: Verify on Unix
         if: runner.os != 'Windows'
-        run: ./mvnw -B clean test
+        run: ./mvnw -B clean verify

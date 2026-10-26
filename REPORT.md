@@ -56,7 +56,8 @@ Workflow запускається на push і pull_request з дозволом 
 Підключено JUnit Jupiter 5.12.2 як залежність зі scope `test` та Surefire 3.5.2.
 Додано навчальний `HelloTest` для перевірки тестової інфраструктури.
 Workflow оновлено з `clean compile` до `clean test` на всіх трьох ОС.
-SpotBugs і Shade ще не налаштовано.
+Додано SpotBugs Maven Plugin 4.10.4.1: ціль `check` прив'язано до фази `verify`.
+Workflow оновлено до `clean verify`; Shade ще не налаштовано.
 
 ## 6. GitHub Issues і Pull Request
 
@@ -66,7 +67,7 @@ SpotBugs і Shade ще не налаштовано.
 | --- | --- | --- |
 | [#1](https://github.com/4iki40k/CPPT-labs-java/issues/1) | Maven і Wrapper | Локально перевірено; PR ще немає |
 | [#2](https://github.com/4iki40k/CPPT-labs-java/issues/2) | Початковий CI | Коміт `267c7fd`: компіляція успішна на трьох ОС; PR ще немає |
-| [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | JUnit перевірено локально; SpotBugs ще не додано |
+| [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | JUnit успішний у CI; SpotBugs перевірено локально, результат CI для verify ще очікується |
 | [#4](https://github.com/4iki40k/CPPT-labs-java/issues/4) | JAR та артефакти | Заплановано |
 | [#5](https://github.com/4iki40k/CPPT-labs-java/issues/5) | Читання й перевірка | Заплановано |
 | [#6](https://github.com/4iki40k/CPPT-labs-java/issues/6) | Показники та звіт | Заплановано |
@@ -110,6 +111,14 @@ java -jar hello.jar
 На кожній ОС виконано `clean compile` через Wrapper із JDK 21 Temurin.
 Цей запуск не перевіряє тести, виконання програми чи пакування JAR.
 
+Після підключення JUnit [запуск №40263754859](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40263754859)
+для коміту `81e2bba` успішно виконав `clean test` на всіх трьох ОС.
+
+Після підключення SpotBugs локально виконано `./mvnw -B -ntp clean verify`:
+один тест успішний, створено звичайний JAR, `BugInstance size is 0`,
+`Error size is 0`, `BUILD SUCCESS`. Результат CI для цього кроку буде
+зафіксовано після перевірки запуску на GitHub.
+
 ## 9. Документація
 
 Створено й оновлено README і REPORT. Javadoc до навчального класу ще не додано;
@@ -147,6 +156,9 @@ java -jar hello.jar
 - Запит: підключити погоджені JUnit 5, Surefire та навчальний тест,
   оновити CI до `clean test`. ШІ налаштував тестову інфраструктуру та перевірив
   локальний запуск одного тесту. Предметних тестів поки немає.
+- Запит: додати погоджений SpotBugs, оновити CI до `clean verify`,
+  виконати коміт і push. ШІ налаштував плагін без вимкнення правил,
+  перевірив локальну збірку та оновив документацію.
 
 ### Внесок студента
 
@@ -173,4 +185,5 @@ java -jar hello.jar
 
 Підтверджено працездатність інструментів JDK і компіляції через Maven Wrapper.
 Підключено навчальний JUnit-тест; початковий CI компіляції успішний на трьох ОС.
-Предметна програма, її тести, SpotBugs, пакування та фінальний реліз ще попереду.
+SpotBugs локально не виявив дефектів у поточному навчальному коді.
+Предметна програма, її тести, виконуваний JAR та фінальний реліз ще попереду.
