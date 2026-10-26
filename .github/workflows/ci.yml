@@ -1,0 +1,86 @@
+name: Java CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Verify on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: .\mvnw.cmd -B clean verify
+
+      - name: Verify on Unix
+        if: runner.os != 'Windows'
+        run: ./mvnw -B clean verify
+
+      - name: Run executable JAR on Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $OutputEncoding = [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
+          $jars = @(Get-ChildItem -Path target -Filter '*-all.jar')
+          if ($jars.Count -ne 1) { throw 'Expected exactly one executable JAR' }
+          $report = java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName
+          if ($LASTEXITCODE -ne 0) { throw 'JAR launch failed' }
+          if ($report -cnotcontains 'Коректних записів: 3') { throw 'Unexpected report or console encoding error' }
+          $savedReport = Get-Content -LiteralPath out/report.txt -Raw -Encoding utf8
+          if (($report -join "`n").Replace("`r", '').TrimEnd() -cne $savedReport.Replace("`r", '').TrimEnd()) {
+            throw 'Console and file reports differ'
+          }
+          Write-Output $report
+          java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName --help
+          if ($LASTEXITCODE -ne 0) { throw 'JAR help command failed' }
+          $version = .\mvnw.cmd -q help:evaluate '-Dexpression=project.version' '-DforceStdout'
+          if ($LASTEXITCODE -ne 0) { throw 'Cannot read Maven project version' }
+          $actual = java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName --version
+          if ($LASTEXITCODE -ne 0) { throw 'JAR version command failed' }
+          $expected = 'lab-java ' + ($version -join "`n").Trim()
+          if (($actual -join "`n").Trim() -ne $expected) { throw "Expected '$expected', got '$actual'" }
+          Write-Output $actual
+
+      - name: Run executable JAR on Unix
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          jars=(target/*-all.jar)
+          test "${#jars[@]}" -eq 1
+          test -f "${jars[0]}"
+          report=$(java -jar "${jars[0]}")
+          test "$report" = "$(cat out/report.txt)"
+          echo "$report" | grep -Fx 'Коректних записів: 3'
+          echo "$report"
+          java -jar "${jars[0]}" --help
+          version=$(./mvnw -q help:evaluate -Dexpression=project.version -DforceStdout)
+          actual=$(java -jar "${jars[0]}" --version)
+          test "$actual" = "lab-java $version"
+          echo "$actual"
+
+      - name: Upload executable JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: jar-${{ matrix.os }}-${{ github.run_number }}
+          path: target/*-all.jar
+          if-no-files-found: error
