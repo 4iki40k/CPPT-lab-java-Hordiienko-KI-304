@@ -1,8 +1,13 @@
 # Лабораторні роботи з Java
 
-[![Java CI](https://github.com/4iki40k/CPPT-labs-java/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/4iki40k/CPPT-labs-java/actions/workflows/ci.yml?query=branch%3Amain)
+[![Java CI](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/workflows/ci.yml?query=branch%3Amain)
 
-Репозиторій: https://github.com/4iki40k/CPPT-labs-java
+Репозиторій: https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304
+
+Студент: Hordiienko, група КІ-304.
+
+Лабораторна №1 зафіксована версією **1.0.0**, Git-тег —
+[v1.0.0](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/tree/v1.0.0).
 
 Java-частина курсу «Кросплатформні засоби програмування». Python-частина
 ведеться окремо.
@@ -13,7 +18,7 @@ Java-частина курсу «Кросплатформні засоби пр�
 Проєкт використовує Java 21, Maven Wrapper 3.9.11, JUnit 5, SpotBugs і Shade.
 GitHub Actions налаштовано на `clean verify`, запуск JAR і публікацію артефактів
 на Ubuntu, Windows і macOS.
-[Предметна програма перевірена на трьох ОС](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40375923177):
+[Предметна програма перевірена на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40375923177):
 53 тести, запуск JAR, версія та публікація артефактів успішні.
 
 ## Лабораторна №1 — варіант 9
@@ -67,7 +72,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 ```
 
 Головний клас — `src/main/java/ua/lpnu/kzp/Main.java`.
-`Hello.java` залишено як навчальний приклад першого етапу, він не є точкою входу JAR.
+Навчальний `Hello.java` видалено з поточної версії; його можна знайти в історії Git.
 Maven записує результати в `target/`, який не входить до репозиторію.
 
 ## Виконуваний JAR
@@ -116,9 +121,9 @@ Shade Plugin створює окремий `*-all.jar` з головним кл�
 - Завдання й дефекти фіксуються через GitHub Issues.
 - `REPORT.md` містить звіт і облік допомоги ШІ; правила ролей — у `ai/`.
 
-Створено [Issues #1–#7](https://github.com/4iki40k/CPPT-labs-java/issues)
+Створено [Issues #1–#7](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/issues)
 і робочу гілку `lab01`, опубліковану на GitHub.
-Лабораторна №1 подана через [Pull Request #10](https://github.com/4iki40k/CPPT-labs-java/pull/10)
+Лабораторна №1 прийнята через [Pull Request #10](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/pull/10)
 із цієї гілки в `main`.
 
 ## Тестування та CI
@@ -152,8 +157,8 @@ CI компілює код, запускає тести, пакує JAR і ви�
 Кожна ОС публікує `*-all.jar` як артефакт із назвою
 `jar-<ОС>-<номер запуску>`. На сторінці успішного запуску Actions завантажте
 артефакт у секції Artifacts, розпакуйте ZIP і запустіть JAR через Java 21.
-Номер запуску CI не є версією програми. Git-тег `v1.0.0` буде створено
-лише після завершення лабораторної та merge.
+Номер запуску CI не є версією програми. Git-тег `v1.0.0` фіксує прийняту
+версію лабораторної №1 після merge фінальних правок.
 Badge вище показує стан стабільної гілки `main`. Стан змін до merge дивіться
 в перевірках Pull Request.
 
