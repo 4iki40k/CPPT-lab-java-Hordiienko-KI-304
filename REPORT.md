@@ -50,7 +50,10 @@
 цільовою Java 21, UTF-8 і Compiler Plugin 3.13.0.
 Глобальний Maven 3.10.0 використано для початкової перевірки та генерації
 Wrapper 3.3.4 типу `only-script`; Wrapper запускає Maven 3.9.11.
-JUnit 5, SpotBugs, Shade і CI ще не налаштовано.
+Додано початковий CI: матриця Ubuntu, Windows і macOS, JDK 21 Temurin,
+кеш Maven та `clean compile` через відповідний для ОС скрипт Wrapper.
+Workflow запускається на push і pull_request з дозволом `contents: read`.
+JUnit 5, SpotBugs і Shade ще не налаштовано.
 
 ## 6. GitHub Issues і Pull Request
 
@@ -59,7 +62,7 @@ JUnit 5, SpotBugs, Shade і CI ще не налаштовано.
 | Issue | Зміна | Стан |
 | --- | --- | --- |
 | [#1](https://github.com/4iki40k/CPPT-labs-java/issues/1) | Maven і Wrapper | Локально перевірено; PR ще немає |
-| [#2](https://github.com/4iki40k/CPPT-labs-java/issues/2) | Початковий CI | Заплановано |
+| [#2](https://github.com/4iki40k/CPPT-labs-java/issues/2) | Початковий CI | Workflow додано; результат запуску ще не підтверджено |
 | [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | Заплановано |
 | [#4](https://github.com/4iki40k/CPPT-labs-java/issues/4) | JAR та артефакти | Заплановано |
 | [#5](https://github.com/4iki40k/CPPT-labs-java/issues/5) | Читання й перевірка | Заплановано |
@@ -94,7 +97,8 @@ java -jar hello.jar
 - `java -cp target/classes ua.lpnu.kzp.Hello` — `Привіт, Java!`.
 
 `-B` вмикає пакетний режим, `-ntp` прибирає індикатори завантажень.
-Автоматизованих тестів і результатів GitHub Actions поки немає.
+Автоматизованих тестів поки немає. Результат початкового GitHub Actions
+буде зафіксовано після запуску на GitHub.
 
 ## 9. Документація
 
@@ -127,6 +131,9 @@ java -jar hello.jar
 - Запит: перейти до Maven; погоджено координати проєкту, POM і перенесення Hello.
   Студент установив Maven. ШІ створив POM, згенерував Wrapper, переніс
   навчальний клас із додаванням пакета та виконав локальні перевірки.
+- Запит: налаштувати погоджений початковий CI та опублікувати гілку `lab01`.
+  ШІ підготував workflow компіляції на трьох ОС і badge у README.
+  Студент погодив конфігурацію та push; результат CI перевіряється окремо.
 
 ### Внесок студента
 

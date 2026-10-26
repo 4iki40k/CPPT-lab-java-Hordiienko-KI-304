@@ -1,5 +1,7 @@
 # Лабораторні роботи з Java
 
+[![Java CI](https://github.com/4iki40k/CPPT-labs-java/actions/workflows/ci.yml/badge.svg?branch=lab01)](https://github.com/4iki40k/CPPT-labs-java/actions/workflows/ci.yml?query=branch%3Alab01)
+
 Репозиторій: https://github.com/4iki40k/CPPT-labs-java
 
 Java-частина курсу «Кросплатформні засоби програмування». Python-частина
@@ -8,7 +10,8 @@ Java-частина курсу «Кросплатформні засоби пр�
 ## Поточний стан
 
 Виконано навчальну перевірку JDK та налаштовано компіляцію через Maven Wrapper
-(Maven 3.9.11). Тести й GitHub Actions ще не налаштовано.
+(Maven 3.9.11). Додано початковий GitHub Actions для компіляції на Ubuntu,
+Windows і macOS. Тести ще не налаштовано.
 Предметну програму ще не реалізовано.
 
 ## Лабораторна №1 — варіант 9
@@ -71,3 +74,11 @@ Maven записує результати в `target/`, який не входи
 
 Створено [Issues #1–#7](https://github.com/4iki40k/CPPT-labs-java/issues)
 і локальну робочу гілку `lab01`. Pull Request ще не відкрито.
+
+## Початковий CI
+
+Workflow `.github/workflows/ci.yml` запускається після push та при відкритті
+або оновленні Pull Request. На кожній із трьох ОС він готує JDK 21 Temurin
+і виконує `clean compile` через Wrapper. Залежності Maven кешуються.
+Цей етап перевіряє лише компіляцію, не тести, запуск програми чи пакування.
+Badge вище показує стан робочої гілки `lab01`; після merge його буде оновлено.
