@@ -40,13 +40,16 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          $OutputEncoding = [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
           $jars = @(Get-ChildItem -Path target -Filter '*-all.jar')
           if ($jars.Count -ne 1) { throw 'Expected exactly one executable JAR' }
-          java -jar $jars[0].FullName
+          $greeting = java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName
           if ($LASTEXITCODE -ne 0) { throw 'JAR launch failed' }
-          $version = .\mvnw.cmd -q help:evaluate -Dexpression=project.version -DforceStdout
+          if (($greeting -join "`n").Trim() -cne 'Привіт, Java!') { throw 'Unexpected greeting or console encoding error' }
+          Write-Output $greeting
+          $version = .\mvnw.cmd -q help:evaluate '-Dexpression=project.version' '-DforceStdout'
           if ($LASTEXITCODE -ne 0) { throw 'Cannot read Maven project version' }
-          $actual = java -jar $jars[0].FullName --version
+          $actual = java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName --version
           if ($LASTEXITCODE -ne 0) { throw 'JAR version command failed' }
           $expected = 'lab-java ' + ($version -join "`n").Trim()
           if (($actual -join "`n").Trim() -ne $expected) { throw "Expected '$expected', got '$actual'" }
