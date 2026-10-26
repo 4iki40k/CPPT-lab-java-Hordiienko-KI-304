@@ -73,7 +73,7 @@ Workflow оновлено до `clean verify`.
 | [#1](https://github.com/4iki40k/CPPT-labs-java/issues/1) | Maven і Wrapper | Локально перевірено; PR ще немає |
 | [#2](https://github.com/4iki40k/CPPT-labs-java/issues/2) | Початковий CI | Коміт `267c7fd`: компіляція успішна на трьох ОС; PR ще немає |
 | [#3](https://github.com/4iki40k/CPPT-labs-java/issues/3) | JUnit і SpotBugs | Verify успішний на трьох ОС; PR ще немає |
-| [#4](https://github.com/4iki40k/CPPT-labs-java/issues/4) | JAR та артефакти | JAR перевірено локально; публікацію артефактів ще потрібно підтвердити в CI |
+| [#4](https://github.com/4iki40k/CPPT-labs-java/issues/4) | JAR та артефакти | JAR перевірено локально та на трьох ОС; три артефакти опубліковано |
 | [#5](https://github.com/4iki40k/CPPT-labs-java/issues/5) | Читання й перевірка | Заплановано |
 | [#6](https://github.com/4iki40k/CPPT-labs-java/issues/6) | Показники та звіт | Заплановано |
 | [#7](https://github.com/4iki40k/CPPT-labs-java/issues/7) | Документація та здача | У роботі |
@@ -137,8 +137,18 @@ Ubuntu та macOS успішно перевірили JAR і опублікув�
 У Windows-лозі також спотворено український вивід —
 [Issue #9](https://github.com/4iki40k/CPPT-labs-java/issues/9).
 Погоджене виправлення: Maven-параметри в лапках, явне UTF-8 для Java
-та PowerShell і перевірка точного привітання. Результат повторного CI
-ще потрібно підтвердити.
+та PowerShell і перевірка точного привітання.
+
+Повторний [запуск №40265865855](https://github.com/4iki40k/CPPT-labs-java/actions/runs/40265865855)
+для коміту `377a725` успішний на Ubuntu, Windows і macOS. Windows-лог містить
+неспотворені `Привіт, Java!` та `lab-java 1.0.0`. Опубліковано три артефакти:
+`jar-ubuntu-latest-6`, `jar-windows-latest-6`, `jar-macos-latest-6`.
+Число 6 — номер запуску CI, не версія програми. Виправлення Issues #8 і #9
+перевірено; закриття відбудеться після merge у main.
+
+GitHub попереджає про застаріле Node.js-середовище `actions/upload-artifact@v4`;
+на цьому запуску дія успішно виконана через Node.js 24. Оновлення дії
+потрібно погодити окремо; це попередження не є помилкою нашого JAR.
 
 ## 9. Документація
 
