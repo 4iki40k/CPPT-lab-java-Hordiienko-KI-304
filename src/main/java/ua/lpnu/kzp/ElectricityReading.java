@@ -4,8 +4,11 @@ import java.util.Objects;
 
 /** Запис електроенергії з можливим нічним споживанням. */
 public final class ElectricityReading extends UtilityReading {
+    /** Частина загального споживання, що припадає на ніч. */
     private final double nightValue;
+    /** Коефіцієнт нічного тарифу в межах від нуля до одиниці. */
     private final double nightCoefficient;
+    /** Перевірена вартість денного й нічного споживання. */
     private final double cost;
 
     /**
@@ -15,6 +18,7 @@ public final class ElectricityReading extends UtilityReading {
      * @param date дата
      * @param value загальне споживання
      * @param tariff основний тариф
+     * @throws IllegalArgumentException якщо спільні значення неприпустимі
      */
     public ElectricityReading(
             String meter, String date, double value, double tariff) {
@@ -80,7 +84,10 @@ public final class ElectricityReading extends UtilityReading {
         return nightCoefficient;
     }
 
-    /** Повертає категорію електроенергії. */
+    /**
+     * Повертає категорію електроенергії.
+     * @return категорія ELECTRICITY
+     */
     @Override
     public UtilityKind getKind() {
         return UtilityKind.ELECTRICITY;
@@ -101,7 +108,7 @@ public final class ElectricityReading extends UtilityReading {
 
         ElectricityReading reading = (ElectricityReading) other;
         return Double.compare(nightValue, reading.nightValue) == 0
-            && Double.compare(nightCoefficient, reading.nightCoefficient) == 0;
+                && Double.compare(nightCoefficient, reading.nightCoefficient) == 0;
     }
 
     /** Повертає хеш-код із урахуванням нічних параметрів. */

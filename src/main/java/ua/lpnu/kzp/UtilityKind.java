@@ -4,12 +4,20 @@ import java.util.Locale;
 
 /** Категорія комунального запису. */
 public enum UtilityKind {
+    /** Споживання електроенергії. */
     ELECTRICITY("електроенергія"),
+    /** Споживання води. */
     WATER("вода"),
+    /** Інші комунальні послуги. */
     OTHER("інше");
 
+    /** Український підпис категорії. */
     private final String label;
 
+    /**
+     * Задає підпис константи.
+     * @param label український підпис
+     */
     UtilityKind(String label) {
         this.label = label;
     }
@@ -41,7 +49,7 @@ public enum UtilityKind {
         return switch (normalized) {
             case "електроенергія", "електрика" -> ELECTRICITY;
             case "вода", "гаряча вода", "холодна вода" -> WATER;
-                default -> OTHER;
+            default -> OTHER;
         };
     }
 }

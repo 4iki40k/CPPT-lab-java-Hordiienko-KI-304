@@ -3,7 +3,7 @@ package ua.lpnu.kzp;
 import java.util.Locale;
 import java.util.Objects;
 
-/** Незмінний запис про комунальний показник. */
+/** Базовий комунальний запис зі спільними незмінними полями та валідацією. */
 public class UtilityReading implements CostCalculable {
     /** Назва лічильника без крайових пробілів. */
     private final String meter;
@@ -29,7 +29,15 @@ public class UtilityReading implements CostCalculable {
                 date.strip(), value, tariff, true);
     }
 
-    /** Присвоює вже перевірені й нормалізовані значення. */
+    /**
+     * Присвоює вже перевірені й нормалізовані значення без повторної валідації.
+     *
+     * @param meter очищена назва лічильника
+     * @param date очищена дата
+     * @param value перевірене споживання
+     * @param tariff перевірений тариф
+     * @param validated службовий параметр для відмінної сигнатури конструктора
+     */
     private UtilityReading(String meter, String date, double value,
             double tariff, boolean validated) {
         this.meter = meter;
@@ -90,7 +98,7 @@ public class UtilityReading implements CostCalculable {
     }
 
     /**
-     * Створює запис із CSV-рядка.
+     * Створює відповідний підтип із CSV-рядка за категорією назви послуги.
      *
      * @param line рядок meter;date;value;tariff
      * @return коректний комунальний запис
@@ -115,11 +123,11 @@ public class UtilityReading implements CostCalculable {
             UtilityKind kind = UtilityKind.fromMeter(fields[0]);
             return switch (kind) {
                 case ELECTRICITY ->
-                    new ElectricityReading(fields[0], fields[1], value, tariff);
+                        new ElectricityReading(fields[0], fields[1], value, tariff);
                 case WATER ->
-                    new WaterReading(fields[0], fields[1], value, tariff);
+                        new WaterReading(fields[0], fields[1], value, tariff);
                 case OTHER ->
-                    new UtilityReading(fields[0], fields[1], value, tariff);
+                        new UtilityReading(fields[0], fields[1], value, tariff);
             };
         } catch (NumberFormatException exception) {
             throw new IllegalArgumentException(
@@ -210,9 +218,9 @@ public class UtilityReading implements CostCalculable {
         UtilityReading reading = (UtilityReading) other;
 
         return meter.equals(reading.meter)
-            && date.equals(reading.date)
-            && Double.compare(value, reading.value) == 0
-            && Double.compare(tariff, reading.tariff) == 0;
+                && date.equals(reading.date)
+                && Double.compare(value, reading.value) == 0
+                && Double.compare(tariff, reading.tariff) == 0;
     }
 
     /** Повертає хеш-код, узгоджений із логічною рівністю. */

@@ -4,7 +4,9 @@ import java.util.Objects;
 
 /** Комунальний запис води з можливим тарифом водовідведення. */
 public final class WaterReading extends UtilityReading {
+    /** Скінченний невід'ємний тариф водовідведення. */
     private final double wastewaterTariff;
+    /** Перевірена вартість, обчислена під час створення незмінного об'єкта. */
     private final double cost;
 
     /**
@@ -14,6 +16,7 @@ public final class WaterReading extends UtilityReading {
      * @param date дата
      * @param value споживання
      * @param tariff тариф водопостачання
+     * @throws IllegalArgumentException якщо спільні значення неприпустимі
      */
     public WaterReading(String meter, String date, double value, double tariff) {
         this(meter, date, value, tariff, 0.0);
@@ -39,7 +42,7 @@ public final class WaterReading extends UtilityReading {
         }
 
         double calculatedCost =
-            value * tariff + value * wastewaterTariff;
+                value * tariff + value * wastewaterTariff;
 
         if (!Double.isFinite(calculatedCost)) {
             throw new IllegalArgumentException(
@@ -59,7 +62,10 @@ public final class WaterReading extends UtilityReading {
         return wastewaterTariff;
     }
 
-    /** Повертає категорію водопостачання. */
+    /**
+     * Повертає категорію водопостачання.
+     * @return категорія WATER
+     */
     @Override
     public UtilityKind getKind() {
         return UtilityKind.WATER;
