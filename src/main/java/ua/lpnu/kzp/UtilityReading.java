@@ -1,9 +1,10 @@
 package ua.lpnu.kzp;
 
 import java.util.Locale;
+import java.util.Objects;
 
-/** Незмінний запис про комунальний показник. */
-public final class UtilityReading {
+/** Базовий комунальний запис зі спільними незмінними полями та валідацією. */
+public class UtilityReading implements CostCalculable {
     /** Назва лічильника без крайових пробілів. */
     private final String meter;
     /** Дата як непорожній текст. */
@@ -24,25 +25,23 @@ public final class UtilityReading {
      * @throws IllegalArgumentException якщо значення неприпустимі
      */
     public UtilityReading(String meter, String date, double value, double tariff) {
-        validateTextFields(meter, date);
+        this(validateReading(meter, date, value, tariff),
+                date.strip(), value, tariff, true);
+    }
 
-        if (!Double.isFinite(value) || !Double.isFinite(tariff)) {
-            throw new IllegalArgumentException(
-                    "Помилка: споживання та тариф мають бути скінченними числами");
-        }
-
-        if (value < 0 || tariff < 0) {
-            throw new IllegalArgumentException(
-                    "Помилка: споживання та тариф не можуть бути від’ємними");
-        }
-
-        if (!Double.isFinite(value * tariff)) {
-            throw new IllegalArgumentException(
-                    "Помилка: вартість запису перевищує допустимий діапазон");
-        }
-
-        this.meter = meter.strip();
-        this.date = date.strip();
+    /**
+     * Присвоює вже перевірені й нормалізовані значення без повторної валідації.
+     *
+     * @param meter очищена назва лічильника
+     * @param date очищена дата
+     * @param value перевірене споживання
+     * @param tariff перевірений тариф
+     * @param validated службовий параметр для відмінної сигнатури конструктора
+     */
+    private UtilityReading(String meter, String date, double value,
+            double tariff, boolean validated) {
+        this.meter = meter;
+        this.date = date;
         this.value = value;
         this.tariff = tariff;
     }
@@ -67,7 +66,39 @@ public final class UtilityReading {
     }
 
     /**
-     * Створює запис із CSV-рядка.
+     * Перевіряє весь запис і повертає очищену назву лічильника.
+     *
+     * @param meter назва лічильника
+     * @param date дата як текст
+     * @param value споживання
+     * @param tariff тариф
+     * @return назва без крайових пробілів
+     * @throws IllegalArgumentException якщо значення неприпустимі
+     */
+    private static String validateReading(
+            String meter, String date, double value, double tariff) {
+        validateTextFields(meter, date);
+
+        if (!Double.isFinite(value) || !Double.isFinite(tariff)) {
+            throw new IllegalArgumentException(
+                    "Помилка: споживання та тариф мають бути скінченними числами");
+        }
+
+        if (value < 0 || tariff < 0) {
+            throw new IllegalArgumentException(
+                    "Помилка: споживання та тариф не можуть бути від’ємними");
+        }
+
+        if (!Double.isFinite(value * tariff)) {
+            throw new IllegalArgumentException(
+                    "Помилка: вартість запису перевищує допустимий діапазон");
+        }
+
+        return meter.strip();
+    }
+
+    /**
+     * Створює відповідний підтип із CSV-рядка за категорією назви послуги.
      *
      * @param line рядок meter;date;value;tariff
      * @return коректний комунальний запис
@@ -89,11 +120,19 @@ public final class UtilityReading {
             double value = Double.parseDouble(fields[2].strip());
             double tariff = Double.parseDouble(fields[3].strip());
 
-            return new UtilityReading(fields[0], fields[1], value, tariff);
+            UtilityKind kind = UtilityKind.fromMeter(fields[0]);
+            return switch (kind) {
+                case ELECTRICITY ->
+                        new ElectricityReading(fields[0], fields[1], value, tariff);
+                case WATER ->
+                        new WaterReading(fields[0], fields[1], value, tariff);
+                case OTHER ->
+                        new UtilityReading(fields[0], fields[1], value, tariff);
+            };
         } catch (NumberFormatException exception) {
             throw new IllegalArgumentException(
                     "Помилка: споживання або тариф має неправильний числовий формат",
-                     exception);
+                    exception);
         }
     }
 
@@ -138,11 +177,55 @@ public final class UtilityReading {
     }
 
     /**
+     * Обчислює вартість звичайного комунального запису.
+     *
+     * @return споживання, помножене на тариф
+     */
+    @Override
+    public double calculateCost() {
+        return value * tariff;
+    }
+
+    /**
      * Повертає споживання та обчислену вартість запису.
      *
      * @return незмінна пара споживання та вартості
      */
     public ConsumptionCost consumptionCost() {
-        return new ConsumptionCost(value, value * tariff);
+        return new ConsumptionCost(value, calculateCost());
+    }
+
+    /**
+     * Повертає категорію звичайного комунального запису.
+     *
+     * @return категорія OTHER
+     */
+    public UtilityKind getKind() {
+        return UtilityKind.OTHER;
+    }
+
+    /** Порівнює записи одного фактичного класу за спільними полями. */
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+
+        if (other == null || getClass() != other.getClass()) {
+            return false;
+        }
+
+        UtilityReading reading = (UtilityReading) other;
+
+        return meter.equals(reading.meter)
+                && date.equals(reading.date)
+                && Double.compare(value, reading.value) == 0
+                && Double.compare(tariff, reading.tariff) == 0;
+    }
+
+    /** Повертає хеш-код, узгоджений із логічною рівністю. */
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClass(), meter, date, value, tariff);
     }
 }
