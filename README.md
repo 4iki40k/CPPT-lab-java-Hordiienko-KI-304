@@ -9,35 +9,78 @@
 Лабораторна №1 зафіксована версією **1.0.0**, Git-тег —
 [v1.0.0](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/tree/v1.0.0).
 Її звіт також збережено в [reports/lab01.md](reports/lab01.md).
-Поточна робота — **лабораторна №2**, версія **1.1.0**, гілка `lab02`.
+Лабораторна №2: [v1.1.0](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/tree/v1.1.0),
+звіт — [reports/lab02.md](reports/lab02.md).
+Поточна робота — **лабораторна №3**, версія **1.2.0**, гілка `lab03`.
 
 Java-частина курсу «Кросплатформні засоби програмування». Python-частина
 ведеться окремо.
 
 ## Поточний стан
 
-Реалізовано рефакторинг варіанта 9: CSV → `UtilityReading` → список об'єктів
-і `ConsumptionCost` → показники → той самий звіт.
+Реалізовано поліморфну модель варіанта 9: CSV → фабрика підтипів →
+`List<UtilityReading>` → `ConsumptionCost` → той самий звіт.
 Проєкт використовує Java 21, Maven Wrapper 3.9.11, JUnit 5, SpotBugs і Shade.
 GitHub Actions налаштовано на `clean verify`, запуск JAR і публікацію артефактів
 на Ubuntu, Windows і macOS.
 [Базова версія лабораторної №1 перевірена на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40375923177).
-Поточна реалізація має 112 тестів;
-[CI лабораторної №2 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40417462068).
+Поточна реалізація має 215 тестів; CI лабораторної №3 перевіряється після push.
+[CI попередньої лабораторної №2 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40417462068).
 
-## Лабораторна №2: модель даних
+## Лабораторна №3: модель даних
 
-- `UtilityReading` — final-клас із private final полями meter, date, value, tariff.
+- `CostCalculable` — спільний інтерфейс із методом `calculateCost()`.
+- `UtilityReading` — базовий клас із private final полями meter, date, value, tariff.
   Конструктор перевіряє інваріанти, геттери дозволяють лише читання; сеттерів немає.
+  Клас не abstract: старий публічний конструктор збережено для сумісності.
+  Перевірка аргументів делегованого конструктора усуває CT_CONSTRUCTOR_THROW
+  без вимкнення правила SpotBugs.
 - `fromCsv` перевіряє структуру й числовий формат, а потім викликає конструктор.
   Спільний текстовий валідатор зберігає старий порядок повідомлень без дублювання правил.
+- `ElectricityReading` і `WaterReading` — final-підтипи з власними незмінними
+  параметрами та перевизначеними `calculateCost()` і `getKind()`.
+- `UtilityKind` — категорії ELECTRICITY, WATER, OTHER з українськими підписами.
 - `ConsumptionCost` — record пари споживання й вартості, з перевіркою компонентів.
-  Метод `UtilityReading.consumptionCost()` повертає value та value × tariff.
+  Метод `UtilityReading.consumptionCost()` повертає value та результат
+  поліморфного `calculateCost()`.
 - `Main` додає до List<UtilityReading> лише прийняті записи після перевірки сум.
   `validateLine` залишено адаптером для попередніх тестів, без власних правил.
 - `toString` сутності використовує Locale.ROOT і призначений для людини, не для CSV.
+- `equals/hashCode` враховують фактичний клас, спільні поля й власні параметри
+  підтипів. Текст порівнюється точно після strip, числа — через Double.compare.
+  Обчислене cost окремо не порівнюється. HashSet/HashMap перевіряються тестами;
+  Main не видаляє повторні рядки зі статистики.
 
 Формат вхідного файла, чотири показники, діагностика й зовнішній звіт не змінені.
+
+```text
+CostCalculable
+    ↑ implements
+UtilityReading
+    ├── ElectricityReading
+    └── WaterReading
+```
+
+### Вибір підтипу й навчальні формули
+
+Фабрика класифікує назву без урахування регістру та крайових пробілів:
+
+| Назва послуги | Тип |
+| --- | --- |
+| Електроенергія, електрика | ElectricityReading |
+| Вода, гаряча вода, холодна вода | WaterReading |
+| Інші назви, зокрема газ | UtilityReading, категорія OTHER |
+
+Електроенергія: `(value − nightValue) × tariff + nightValue × tariff × nightCoefficient`.
+Нічна частина в межах 0..value, коефіцієнт у межах 0..1.
+Вода: `value × tariff + value × wastewaterTariff`; додатковий тариф невід'ємний.
+Це навчальні формули, не твердження про фактичні тарифи постачальників.
+
+Старий CSV містить лише чотири поля: фабрика задає нічне споживання 0
+та тариф водовідведення 0, тому зберігається `value × tariff`.
+Додаткові параметри доступні через конструктори й демонструються тестами;
+п'яте чи шосте поле CSV не приймаються. Switch використовується тільки
+у створенні об'єктів, а Main не вибирає формулу за типом.
 
 ## Предметна задача — варіант 9
 
@@ -97,10 +140,10 @@ Maven записує результати в `target/`, який не входи
 
 ```bash
 ./mvnw clean verify
-java -jar target/lab-java-1.1.0-all.jar
-java -jar target/lab-java-1.1.0-all.jar --help
-java -jar target/lab-java-1.1.0-all.jar --version
-java -jar target/lab-java-1.1.0-all.jar --input data/input.csv --output out/report.txt
+java -jar target/lab-java-1.2.0-all.jar
+java -jar target/lab-java-1.2.0-all.jar --help
+java -jar target/lab-java-1.2.0-all.jar --version
+java -jar target/lab-java-1.2.0-all.jar --input data/input.csv --output out/report.txt
 ```
 
 Звичайний запуск читає `data/input.csv` і записує `out/report.txt` відносно
@@ -108,7 +151,7 @@ java -jar target/lab-java-1.1.0-all.jar --input data/input.csv --output out/repo
 Шляхи з пробілами беріть у лапки. Каталоги для звіту створюються автоматично;
 наявний файл звіту перезаписується. Вхідний і вихідний файли мають бути різними.
 
-Режим `--version` виводить `lab-java 1.1.0`.
+Режим `--version` виводить `lab-java 1.2.0`.
 Shade Plugin створює окремий `*-all.jar` з головним класом і залежностями
 застосунку. JUnit не включається, оскільки має scope `test`.
 Версія надходить із `pom.xml` через поле `Implementation-Version` маніфесту.
@@ -143,10 +186,12 @@ Shade Plugin створює окремий `*-all.jar` з головним кл�
 і робочу гілку `lab01`, опубліковану на GitHub.
 Лабораторна №1 прийнята через [Pull Request #10](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/pull/10)
 із цієї гілки в `main`.
-Лабораторна №2 виконується в `lab02` за [Issues #12–#16](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/issues).
+Лабораторна №2 виконана в `lab02` за [Issues #12–#16](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/issues).
 Зміни подано через [PR #17](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/pull/17)
 у main. Прийнята версія лабораторної №2 фіксується тегом
 [v1.1.0](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/tree/v1.1.0).
+Лабораторна №3 виконується в `lab03` за Issues #18–#24; дефект конструктора
+оформлено окремо як Issue #25. PR і новий тег створюються після перевірок.
 
 ## Тестування та CI
 
@@ -175,6 +220,8 @@ SpotBugs аналізує байт-код і зупиняє збірку при 
 `ConsumptionCostTest` (11) і `Lab01CompatibilityTest` (1).
 Останній порівнює весь текст із контрольним звітом першої роботи,
 нормалізуючи лише CRLF/LF. Старі 53 тести збережено; разом — 112.
+Лабораторна №3 додає 103 перевірки контракту, enum, підтипів, фабрики,
+рівності й хеш-колекцій. Усі попередні 112 тестів збережено; разом — 215.
 
 Workflow `.github/workflows/ci.yml` запускається після push та при відкритті
 або оновленні Pull Request. На кожній із трьох ОС він готує JDK 21 Temurin
@@ -186,8 +233,8 @@ CI компілює код, запускає тести, пакує JAR і ви�
 артефакт у секції Artifacts, розпакуйте ZIP і запустіть JAR через Java 21.
 Номер запуску CI не є версією програми. Git-тег `v1.0.0` фіксує прийняту
 версію лабораторної №1 після merge фінальних правок.
-Тег лабораторної №2 — `v1.1.0` — створюється після прийняття її PR;
-існуючий v1.0.0 не пересувається.
+Тег лабораторної №2 — `v1.1.0` — зберігає її прийнятий стан.
+Для лабораторної №3 заплановано `v1.2.0`; старі теги не пересуваються.
 Badge вище показує стан стабільної гілки `main`. Стан змін до merge дивіться
 в перевірках Pull Request.
 
@@ -196,5 +243,5 @@ Badge вище показує стан стабільної гілки `main`. �
 
 ```powershell
 $OutputEncoding = [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
-java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar target/lab-java-1.1.0-all.jar
+java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar target/lab-java-1.2.0-all.jar
 ```
