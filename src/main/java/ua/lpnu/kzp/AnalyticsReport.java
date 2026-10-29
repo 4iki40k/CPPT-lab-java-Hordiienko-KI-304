@@ -9,11 +9,16 @@ import java.util.stream.Collectors;
 /** Форматує результати аналітичних запитів без файлового й консольного виводу. */
 public final class AnalyticsReport
 {
+    /** Строгий поріг для фільтра контрольного набору. */
     private static final double THRESHOLD = 50.0;
+    /** Максимальний розмір типового топу. */
     private static final int TOP_LIMIT = 5;
+    /** Ключ демонстрації успішного пошуку. */
     private static final String SEARCH_METER = "Вода";
+    /** Ключ демонстрації відсутнього результату. */
     private static final String MISSING_METER = "Тепло";
 
+    /** Забороняє створення об'єктів форматувальника. */
     private AnalyticsReport()
     {
     }
@@ -74,7 +79,11 @@ public final class AnalyticsReport
         return report.toString();
     }
 
-    /** Перетворює список записів на текст для людини. */
+    /**
+     * Перетворює список записів на текст для людини.
+     * @param readings записи для виводу
+     * @return описи або позначення відсутності даних
+     */
     private static String describeReadings(List<UtilityReading> readings)
     {
         if (readings.isEmpty())
@@ -87,19 +96,32 @@ public final class AnalyticsReport
                 .collect(Collectors.joining(", "));
     }
 
-    /** Описує один запис, не змінюючи його. */
+    /**
+     * Описує один запис, не змінюючи його.
+     * @param reading запис
+     * @return назва, дата й споживання
+     */
     private static String describe(UtilityReading reading)
     {
         return String.format(Locale.ROOT, "%s (%s): %.2f", reading.getMeter(), reading.getDate(), reading.getValue());
     }
 
-    /** Форматує дробове число з двома знаками після крапки. */
+    /**
+     * Форматує дробове число з двома знаками після крапки.
+     * @param value число
+     * @return текст із десятковою крапкою
+     */
     private static String number(double value)
     {
         return String.format(Locale.ROOT, "%.2f", value);
     }
 
-    /** Формує підписаний рядок із платформним переносом. */
+    /**
+     * Формує підписаний рядок із платформним переносом.
+     * @param title підпис
+     * @param value значення
+     * @return готовий рядок звіту
+     */
     private static String line(String title, Object value)
     {
         return String.format(Locale.ROOT, "%s: %s%n", title, value);

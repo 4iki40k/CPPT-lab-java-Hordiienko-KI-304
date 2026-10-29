@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/** Консольний звіт про комунальні показники, лабораторна №1, варіант 9. */
+/** Стандартний та аналітичний звіти про комунальні показники, варіант 9. */
 public final class Main
 {
     /** Забороняє створення об'єктів службового класу з точкою входу. */
@@ -20,7 +20,7 @@ public final class Main
     /**
      * Запускає програму; помилки аргументів або файлів дають ненульовий код завершення.
      *
-     * @param args параметри --help, --version, --input та --output
+     * @param args параметри --help, --version, --analytics, --input та --output
      */
     public static void main(String[] args)
     {
@@ -224,9 +224,17 @@ public final class Main
         Files.writeString(output, report, StandardCharsets.UTF_8);
     }
 
-    /** Зберігає прийняті записи, сумарні показники та діагностику. */
+    /**
+     * Зберігає прийняті записи, сумарні показники та діагностику.
+     *
+     * @param readings прийняті записи
+     * @param totals суми споживання та вартості, перевірені на переповнення
+     * @param errorCount кількість відхилених рядків
+     * @param errors текст причин пропуску з номерами рядків
+     */
     private record ReadingBatch(List<UtilityReading> readings, ConsumptionCost totals, int errorCount, String errors)
     {
+        /** Захищає склад списку від подальших змін. */
         private ReadingBatch
         {
             readings = List.copyOf(readings);

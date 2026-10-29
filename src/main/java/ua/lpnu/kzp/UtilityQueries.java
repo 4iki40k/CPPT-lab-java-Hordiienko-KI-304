@@ -12,6 +12,7 @@ import java.util.Optional;
 /** Чисті запити до колекції комунальних записів. */
 public final class UtilityQueries
 {
+    /** Забороняє створення об'єктів класу статичних запитів. */
     private UtilityQueries()
     {
     }
