@@ -26,7 +26,8 @@ Java-частина курсу «Кросплатформні засоби пр�
 GitHub Actions налаштовано на `clean verify`, запуск JAR і публікацію артефактів
 на Ubuntu, Windows і macOS.
 [Базова версія лабораторної №1 перевірена на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40375923177).
-Поточна реалізація має 320 тестів; CI лабораторної №4 перевіряється після push.
+Поточна реалізація має 320 тестів;
+[CI лабораторної №4 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40794414059).
 [CI попередньої лабораторної №3 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40613481159).
 [CI попередньої лабораторної №2 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40417462068).
 
@@ -263,7 +264,8 @@ Shade Plugin створює окремий `*-all.jar` з головним кл�
 містить зміни лабораторної №3. Прийнятий стан фіксується тегом
 [v1.2.0](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/tree/v1.2.0).
 Лабораторна №4 виконується в `lab04` за Issues #27–#36.
-Новий PR і тег v1.3.0 створюються після перевірок та розбору коду.
+[PR #37](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/pull/37)
+відкрито; merge і тег v1.3.0 ще не виконані.
 
 ## Тестування та CI
 
