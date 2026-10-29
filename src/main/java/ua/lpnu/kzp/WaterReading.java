@@ -3,7 +3,8 @@ package ua.lpnu.kzp;
 import java.util.Objects;
 
 /** Комунальний запис води з можливим тарифом водовідведення. */
-public final class WaterReading extends UtilityReading {
+public final class WaterReading extends UtilityReading
+{
     /** Скінченний невід'ємний тариф водовідведення. */
     private final double wastewaterTariff;
     /** Перевірена вартість, обчислена під час створення незмінного об'єкта. */
@@ -18,7 +19,8 @@ public final class WaterReading extends UtilityReading {
      * @param tariff тариф водопостачання
      * @throws IllegalArgumentException якщо спільні значення неприпустимі
      */
-    public WaterReading(String meter, String date, double value, double tariff) {
+    public WaterReading(String meter, String date, double value, double tariff)
+    {
         this(meter, date, value, tariff, 0.0);
     }
 
@@ -32,21 +34,20 @@ public final class WaterReading extends UtilityReading {
      * @param wastewaterTariff тариф водовідведення
      * @throws IllegalArgumentException якщо значення неприпустимі
      */
-    public WaterReading(String meter, String date, double value,
-            double tariff, double wastewaterTariff) {
+    public WaterReading(String meter, String date, double value, double tariff, double wastewaterTariff)
+    {
         super(meter, date, value, tariff);
 
-        if (!Double.isFinite(wastewaterTariff) || wastewaterTariff < 0) {
-            throw new IllegalArgumentException(
-                    "Тариф водовідведення має бути скінченним і невід’ємним");
+        if (!Double.isFinite(wastewaterTariff) || wastewaterTariff < 0)
+        {
+            throw new IllegalArgumentException("Тариф водовідведення має бути скінченним і невід’ємним");
         }
 
-        double calculatedCost =
-                value * tariff + value * wastewaterTariff;
+        double calculatedCost = value * tariff + value * wastewaterTariff;
 
-        if (!Double.isFinite(calculatedCost)) {
-            throw new IllegalArgumentException(
-                    "Вартість водопостачання та водовідведення перевищує допустимий діапазон");
+        if (!Double.isFinite(calculatedCost))
+        {
+            throw new IllegalArgumentException("Вартість водопостачання та водовідведення перевищує допустимий діапазон");
         }
 
         this.wastewaterTariff = wastewaterTariff;
@@ -58,7 +59,8 @@ public final class WaterReading extends UtilityReading {
      *
      * @return тариф водовідведення
      */
-    public double getWastewaterTariff() {
+    public double getWastewaterTariff()
+    {
         return wastewaterTariff;
     }
 
@@ -67,20 +69,24 @@ public final class WaterReading extends UtilityReading {
      * @return категорія WATER
      */
     @Override
-    public UtilityKind getKind() {
+    public UtilityKind getKind()
+    {
         return UtilityKind.WATER;
     }
 
     /** Повертає вартість водопостачання та водовідведення. */
     @Override
-    public double calculateCost() {
+    public double calculateCost()
+    {
         return cost;
     }
 
     /** Порівнює спільні поля та тариф водовідведення. */
     @Override
-    public boolean equals(Object other) {
-        if (!super.equals(other)) {
+    public boolean equals(Object other)
+    {
+        if (!super.equals(other))
+        {
             return false;
         }
 
@@ -90,7 +96,8 @@ public final class WaterReading extends UtilityReading {
 
     /** Повертає хеш-код із урахуванням тарифу водовідведення. */
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return Objects.hash(super.hashCode(), wastewaterTariff);
     }
 }

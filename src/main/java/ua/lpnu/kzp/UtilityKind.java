@@ -3,7 +3,8 @@ package ua.lpnu.kzp;
 import java.util.Locale;
 
 /** Категорія комунального запису. */
-public enum UtilityKind {
+public enum UtilityKind
+{
     /** Споживання електроенергії. */
     ELECTRICITY("електроенергія"),
     /** Споживання води. */
@@ -18,7 +19,8 @@ public enum UtilityKind {
      * Задає підпис константи.
      * @param label український підпис
      */
-    UtilityKind(String label) {
+    UtilityKind(String label)
+    {
         this.label = label;
     }
 
@@ -27,7 +29,8 @@ public enum UtilityKind {
      *
      * @return підпис українською
      */
-    public String label() {
+    public String label()
+    {
         return label;
     }
 
@@ -38,15 +41,17 @@ public enum UtilityKind {
      * @return відповідна категорія або OTHER для невідомої назви
      * @throws IllegalArgumentException якщо назва null
      */
-    public static UtilityKind fromMeter(String meter) {
-        if (meter == null) {
-            throw new IllegalArgumentException(
-                    "Помилка: назва лічильника не може бути null");
+    public static UtilityKind fromMeter(String meter)
+    {
+        if (meter == null)
+        {
+            throw new IllegalArgumentException("Помилка: назва лічильника не може бути null");
         }
 
         String normalized = meter.strip().toLowerCase(Locale.ROOT);
 
-        return switch (normalized) {
+        return switch (normalized)
+        {
             case "електроенергія", "електрика" -> ELECTRICITY;
             case "вода", "гаряча вода", "холодна вода" -> WATER;
             default -> OTHER;

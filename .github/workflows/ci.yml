@@ -51,6 +51,16 @@ jobs:
             throw 'Console and file reports differ'
           }
           Write-Output $report
+          $analytics = java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName --analytics
+          if ($LASTEXITCODE -ne 0) { throw 'Analytics JAR launch failed' }
+          if ($analytics -cnotcontains 'Кількість: 6' -or $analytics -cnotcontains 'Сума: 310.00' -or $analytics -cnotcontains 'Помилок: 2') {
+            throw 'Unexpected analytics report'
+          }
+          $savedAnalytics = Get-Content -LiteralPath out/analytics-report.txt -Raw -Encoding utf8
+          if (($analytics -join "`n").Replace("`r", '').TrimEnd() -cne $savedAnalytics.Replace("`r", '').TrimEnd()) {
+            throw 'Analytics console and file reports differ'
+          }
+          Write-Output $analytics
           java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName --help
           if ($LASTEXITCODE -ne 0) { throw 'JAR help command failed' }
           $version = .\mvnw.cmd -q help:evaluate '-Dexpression=project.version' '-DforceStdout'
@@ -72,6 +82,12 @@ jobs:
           test "$report" = "$(cat out/report.txt)"
           echo "$report" | grep -Fx 'Коректних записів: 3'
           echo "$report"
+          analytics=$(java -jar "${jars[0]}" --analytics)
+          test "$analytics" = "$(cat out/analytics-report.txt)"
+          echo "$analytics" | grep -Fx 'Кількість: 6'
+          echo "$analytics" | grep -Fx 'Сума: 310.00'
+          echo "$analytics" | grep -Fx 'Помилок: 2'
+          echo "$analytics"
           java -jar "${jars[0]}" --help
           version=$(./mvnw -q help:evaluate -Dexpression=project.version -DforceStdout)
           actual=$(java -jar "${jars[0]}" --version)

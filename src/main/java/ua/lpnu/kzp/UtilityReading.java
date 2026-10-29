@@ -1,19 +1,21 @@
 package ua.lpnu.kzp;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.Objects;
 
 /** Базовий комунальний запис зі спільними незмінними полями та валідацією. */
-public class UtilityReading implements CostCalculable {
+public class UtilityReading implements CostCalculable
+{
     /** Назва лічильника без крайових пробілів. */
     private final String meter;
-    /** Дата як непорожній текст. */
-    private final String date;
+    /** Перевірена календарна дата запису. */
+    private final LocalDate date;
     /** Скінченне невід'ємне споживання. */
     private final double value;
     /** Скінченний невід'ємний тариф. */
     private final double tariff;
-
 
     /**
      * Створює запис після перевірки всіх значень.
@@ -24,22 +26,21 @@ public class UtilityReading implements CostCalculable {
      * @param tariff тариф
      * @throws IllegalArgumentException якщо значення неприпустимі
      */
-    public UtilityReading(String meter, String date, double value, double tariff) {
-        this(validateReading(meter, date, value, tariff),
-                date.strip(), value, tariff, true);
+    public UtilityReading(String meter, String date, double value, double tariff)
+    {
+        this(validateReading(meter, date, value, tariff), parseDate(date), value, tariff);
     }
 
     /**
-     * Присвоює вже перевірені й нормалізовані значення без повторної валідації.
+     * Присвоює вже перевірені значення.
      *
      * @param meter очищена назва лічильника
-     * @param date очищена дата
+     * @param date перевірена календарна дата
      * @param value перевірене споживання
      * @param tariff перевірений тариф
-     * @param validated службовий параметр для відмінної сигнатури конструктора
      */
-    private UtilityReading(String meter, String date, double value,
-            double tariff, boolean validated) {
+    private UtilityReading(String meter, LocalDate date, double value, double tariff)
+    {
         this.meter = meter;
         this.date = date;
         this.value = value;
@@ -53,15 +54,16 @@ public class UtilityReading implements CostCalculable {
      * @param date дата як текст
      * @throws IllegalArgumentException якщо поле null або порожнє
      */
-    private static void validateTextFields(String meter, String date) {
-        if (meter == null || date == null) {
-            throw new IllegalArgumentException(
-                    "Помилка: назва лічильника та дата не можуть бути null");
+    private static void validateTextFields(String meter, String date)
+    {
+        if (meter == null || date == null)
+        {
+            throw new IllegalArgumentException("Помилка: назва лічильника та дата не можуть бути null");
         }
 
-        if (meter.isBlank() || date.isBlank()) {
-            throw new IllegalArgumentException(
-                    "Помилка: назва лічильника або дата порожня");
+        if (meter.isBlank() || date.isBlank())
+        {
+            throw new IllegalArgumentException("Помилка: назва лічильника або дата порожня");
         }
     }
 
@@ -75,26 +77,45 @@ public class UtilityReading implements CostCalculable {
      * @return назва без крайових пробілів
      * @throws IllegalArgumentException якщо значення неприпустимі
      */
-    private static String validateReading(
-            String meter, String date, double value, double tariff) {
+    private static String validateReading(String meter, String date, double value, double tariff)
+    {
         validateTextFields(meter, date);
 
-        if (!Double.isFinite(value) || !Double.isFinite(tariff)) {
-            throw new IllegalArgumentException(
-                    "Помилка: споживання та тариф мають бути скінченними числами");
+        if (!Double.isFinite(value) || !Double.isFinite(tariff))
+        {
+            throw new IllegalArgumentException("Помилка: споживання та тариф мають бути скінченними числами");
         }
 
-        if (value < 0 || tariff < 0) {
-            throw new IllegalArgumentException(
-                    "Помилка: споживання та тариф не можуть бути від’ємними");
+        if (value < 0 || tariff < 0)
+        {
+            throw new IllegalArgumentException("Помилка: споживання та тариф не можуть бути від’ємними");
         }
 
-        if (!Double.isFinite(value * tariff)) {
-            throw new IllegalArgumentException(
-                    "Помилка: вартість запису перевищує допустимий діапазон");
+        if (!Double.isFinite(value * tariff))
+        {
+            throw new IllegalArgumentException("Помилка: вартість запису перевищує допустимий діапазон");
         }
 
         return meter.strip();
+    }
+
+    /**
+     * Перетворює текст ISO-формату на календарну дату.
+     *
+     * @param date попередньо перевірений непорожній текст
+     * @return календарна дата
+     * @throws IllegalArgumentException якщо дата або її формат некоректні
+     */
+    private static LocalDate parseDate(String date)
+    {
+        try
+        {
+            return LocalDate.parse(date.strip());
+        }
+        catch (DateTimeParseException exception)
+        {
+            throw new IllegalArgumentException("Помилка: дата має бути коректною календарною датою у форматі YYYY-MM-DD", exception);
+        }
     }
 
     /**
@@ -104,24 +125,29 @@ public class UtilityReading implements CostCalculable {
      * @return коректний комунальний запис
      * @throws IllegalArgumentException якщо рядок або значення некоректні
      */
-    public static UtilityReading fromCsv(String line) {
-        if (line == null) {
+    public static UtilityReading fromCsv(String line)
+    {
+        if (line == null)
+        {
             throw new IllegalArgumentException("Помилка: CSV-рядок не може бути null");
         }
 
         String[] fields = line.split(";", -1);
-        if (fields.length != 4) {
+        if (fields.length != 4)
+        {
             throw new IllegalArgumentException("Помилка: потрібно рівно 4 поля");
         }
 
         validateTextFields(fields[0], fields[1]);
 
-        try {
+        try
+        {
             double value = Double.parseDouble(fields[2].strip());
             double tariff = Double.parseDouble(fields[3].strip());
 
             UtilityKind kind = UtilityKind.fromMeter(fields[0]);
-            return switch (kind) {
+            return switch (kind)
+            {
                 case ELECTRICITY ->
                         new ElectricityReading(fields[0], fields[1], value, tariff);
                 case WATER ->
@@ -129,10 +155,10 @@ public class UtilityReading implements CostCalculable {
                 case OTHER ->
                         new UtilityReading(fields[0], fields[1], value, tariff);
             };
-        } catch (NumberFormatException exception) {
-            throw new IllegalArgumentException(
-                    "Помилка: споживання або тариф має неправильний числовий формат",
-                    exception);
+        }
+        catch (NumberFormatException exception)
+        {
+            throw new IllegalArgumentException("Помилка: споживання або тариф має неправильний числовий формат", exception);
         }
     }
 
@@ -140,15 +166,28 @@ public class UtilityReading implements CostCalculable {
      * Читає назву лічильника.
      * @return назва лічильника
      */
-    public String getMeter() {
+    public String getMeter()
+    {
         return meter;
     }
 
     /**
-     * Читає дату запису.
-     * @return дата як текст
+     * Повертає текстове представлення дати для сумісності.
+     *
+     * @return дата в ISO-форматі
      */
-    public String getDate() {
+    public String getDate()
+    {
+        return date.toString();
+    }
+
+    /**
+     * Повертає календарну дату для запитів і порівнянь.
+     *
+     * @return дата запису
+     */
+    public LocalDate getLocalDate()
+    {
         return date;
     }
 
@@ -156,7 +195,8 @@ public class UtilityReading implements CostCalculable {
      * Читає споживання.
      * @return споживання
      */
-    public double getValue() {
+    public double getValue()
+    {
         return value;
     }
 
@@ -164,16 +204,16 @@ public class UtilityReading implements CostCalculable {
      * Читає тариф.
      * @return тариф
      */
-    public double getTariff() {
+    public double getTariff()
+    {
         return tariff;
     }
 
     /** Повертає зрозумілий текстовий опис запису. */
     @Override
-    public String toString() {
-        return String.format(Locale.ROOT,
-                "%s (%s): споживання %.2f, тариф %.2f",
-                meter, date, value, tariff);
+    public String toString()
+    {
+        return String.format(Locale.ROOT, "%s (%s): споживання %.2f, тариф %.2f", meter, date, value, tariff);
     }
 
     /**
@@ -182,7 +222,8 @@ public class UtilityReading implements CostCalculable {
      * @return споживання, помножене на тариф
      */
     @Override
-    public double calculateCost() {
+    public double calculateCost()
+    {
         return value * tariff;
     }
 
@@ -191,7 +232,8 @@ public class UtilityReading implements CostCalculable {
      *
      * @return незмінна пара споживання та вартості
      */
-    public ConsumptionCost consumptionCost() {
+    public ConsumptionCost consumptionCost()
+    {
         return new ConsumptionCost(value, calculateCost());
     }
 
@@ -200,18 +242,22 @@ public class UtilityReading implements CostCalculable {
      *
      * @return категорія OTHER
      */
-    public UtilityKind getKind() {
+    public UtilityKind getKind()
+    {
         return UtilityKind.OTHER;
     }
 
     /** Порівнює записи одного фактичного класу за спільними полями. */
     @Override
-    public boolean equals(Object other) {
-        if (this == other) {
+    public boolean equals(Object other)
+    {
+        if (this == other)
+        {
             return true;
         }
 
-        if (other == null || getClass() != other.getClass()) {
+        if (other == null || getClass() != other.getClass())
+        {
             return false;
         }
 
@@ -225,7 +271,8 @@ public class UtilityReading implements CostCalculable {
 
     /** Повертає хеш-код, узгоджений із логічною рівністю. */
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return Objects.hash(getClass(), meter, date, value, tariff);
     }
 }
