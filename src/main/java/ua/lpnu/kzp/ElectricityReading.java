@@ -3,7 +3,8 @@ package ua.lpnu.kzp;
 import java.util.Objects;
 
 /** Запис електроенергії з можливим нічним споживанням. */
-public final class ElectricityReading extends UtilityReading {
+public final class ElectricityReading extends UtilityReading
+{
     /** Частина загального споживання, що припадає на ніч. */
     private final double nightValue;
     /** Коефіцієнт нічного тарифу в межах від нуля до одиниці. */
@@ -20,8 +21,8 @@ public final class ElectricityReading extends UtilityReading {
      * @param tariff основний тариф
      * @throws IllegalArgumentException якщо спільні значення неприпустимі
      */
-    public ElectricityReading(
-            String meter, String date, double value, double tariff) {
+    public ElectricityReading(String meter, String date, double value, double tariff)
+    {
         this(meter, date, value, tariff, 0.0, 0.5);
     }
 
@@ -36,29 +37,27 @@ public final class ElectricityReading extends UtilityReading {
      * @param nightCoefficient коефіцієнт нічного тарифу від 0 до 1
      * @throws IllegalArgumentException якщо значення неприпустимі
      */
-    public ElectricityReading(String meter, String date, double value,
-            double tariff, double nightValue, double nightCoefficient) {
+    public ElectricityReading(String meter, String date, double value, double tariff, double nightValue, double nightCoefficient)
+    {
         super(meter, date, value, tariff);
 
-        if (!Double.isFinite(nightValue)
-                || nightValue < 0 || nightValue > value) {
-            throw new IllegalArgumentException(
-                    "Нічне споживання має бути скінченним і в межах загального");
+        if (!Double.isFinite(nightValue) || nightValue < 0 || nightValue > value)
+        {
+            throw new IllegalArgumentException("Нічне споживання має бути скінченним і в межах загального");
         }
 
-        if (!Double.isFinite(nightCoefficient)
-                || nightCoefficient < 0 || nightCoefficient > 1) {
-            throw new IllegalArgumentException(
-                    "Нічний коефіцієнт має бути скінченним і в межах від 0 до 1");
+        if (!Double.isFinite(nightCoefficient) || nightCoefficient < 0 || nightCoefficient > 1)
+        {
+            throw new IllegalArgumentException("Нічний коефіцієнт має бути скінченним і в межах від 0 до 1");
         }
 
         double dayValue = value - nightValue;
         double calculatedCost = dayValue * tariff
                 + nightValue * tariff * nightCoefficient;
 
-        if (!Double.isFinite(calculatedCost)) {
-            throw new IllegalArgumentException(
-                    "Вартість електроенергії перевищує допустимий діапазон");
+        if (!Double.isFinite(calculatedCost))
+        {
+            throw new IllegalArgumentException("Вартість електроенергії перевищує допустимий діапазон");
         }
 
         this.nightValue = nightValue;
@@ -71,7 +70,8 @@ public final class ElectricityReading extends UtilityReading {
      *
      * @return нічне споживання
      */
-    public double getNightValue() {
+    public double getNightValue()
+    {
         return nightValue;
     }
 
@@ -80,7 +80,8 @@ public final class ElectricityReading extends UtilityReading {
      *
      * @return нічний коефіцієнт
      */
-    public double getNightCoefficient() {
+    public double getNightCoefficient()
+    {
         return nightCoefficient;
     }
 
@@ -89,20 +90,24 @@ public final class ElectricityReading extends UtilityReading {
      * @return категорія ELECTRICITY
      */
     @Override
-    public UtilityKind getKind() {
+    public UtilityKind getKind()
+    {
         return UtilityKind.ELECTRICITY;
     }
 
     /** Повертає вартість денного та нічного споживання. */
     @Override
-    public double calculateCost() {
+    public double calculateCost()
+    {
         return cost;
     }
 
     /** Порівнює спільні поля та параметри нічного споживання. */
     @Override
-    public boolean equals(Object other) {
-        if (!super.equals(other)) {
+    public boolean equals(Object other)
+    {
+        if (!super.equals(other))
+        {
             return false;
         }
 
@@ -113,7 +118,8 @@ public final class ElectricityReading extends UtilityReading {
 
     /** Повертає хеш-код із урахуванням нічних параметрів. */
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         return Objects.hash(super.hashCode(), nightValue, nightCoefficient);
     }
 }

@@ -1,7 +1,8 @@
 package ua.lpnu.kzp;
 
 /** Контракт об'єкта, який уміє обчислювати вартість. */
-public interface CostCalculable {
+public interface CostCalculable
+{
     /**
      * Обчислює вартість споживання.
      *
