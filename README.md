@@ -13,21 +13,24 @@
 звіт — [reports/lab02.md](reports/lab02.md).
 Лабораторна №3: [v1.2.0](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/tree/v1.2.0),
 звіт — [reports/lab03.md](reports/lab03.md).
-Поточна робота — **лабораторна №4**, версія **1.3.0**, гілка `lab04`.
+Лабораторна №4: [v1.3.0](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/tree/v1.3.0),
+звіт — [reports/lab04.md](reports/lab04.md).
+Поточна робота — **лабораторна №5**, версія **1.4.0**, гілка `lab05`.
 
 Java-частина курсу «Кросплатформні засоби програмування». Python-частина
 ведеться окремо.
 
 ## Поточний стан
 
-Реалізовано поліморфну модель варіанта 9, п'ять Stream-запитів, Optional-пошук
-та окремий аналітичний режим. Старий стандартний звіт збережено для контрольних даних.
+Реалізовано поліморфну модель варіанта 9, п'ять Stream-запитів, Optional-пошук,
+окремий аналітичний режим, параметризоване сховище та рефлексивний CSV-експорт
+із перевіркою round-trip. Старий стандартний звіт збережено для контрольних даних.
 Проєкт використовує Java 21, Maven Wrapper 3.9.11, JUnit 5, SpotBugs і Shade.
 GitHub Actions налаштовано на `clean verify`, запуск JAR і публікацію артефактів
 на Ubuntu, Windows і macOS.
 [Базова версія лабораторної №1 перевірена на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40375923177).
-Поточна реалізація має 320 тестів;
-[CI лабораторної №4 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40794414059).
+Поточна реалізація має 415 тестів.
+[CI попередньої лабораторної №4 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40794414059).
 [CI попередньої лабораторної №3 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40613481159).
 [CI попередньої лабораторної №2 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40417462068).
 
@@ -49,7 +52,7 @@ GitHub Actions налаштовано на `clean verify`, запуск JAR і �
 - `ConsumptionCost` — record пари споживання й вартості, з перевіркою компонентів.
   Метод `UtilityReading.consumptionCost()` повертає value та результат
   поліморфного `calculateCost()`.
-- `Main` додає до List<UtilityReading> лише прийняті записи після перевірки сум.
+- `Main` додає до `Repository<UtilityReading>` лише прийняті записи після перевірки сум.
   `validateLine` залишено адаптером для попередніх тестів, без власних правил.
 - `toString` сутності використовує Locale.ROOT і призначений для людини, не для CSV.
 - `equals/hashCode` враховують фактичний клас, спільні поля й власні параметри
@@ -122,6 +125,36 @@ UtilityReading
 Цикл прийняття записів збережено для діагностики та переповнення; запити
 використовують Stream, а максимум старого звіту тепер отримується зі статистики.
 
+## Лабораторна №5: сховище та CSV-експорт
+
+- `Repository<T>` — типобезпечне сховище: `add` (без null), `all()` (незмінний знімок
+  у порядку додавання), `find(Predicate<? super T>)`. Main зберігає прийняті записи
+  в `Repository<UtilityReading>`; обидва попередні звіти не змінилися.
+- `@CsvColumn` — `@Retention(RUNTIME)`, `@Target(FIELD)`, `String value()` із назвою стовпця.
+- `DataStorageException` — checked-виняток для помилок CSV, файлу й рефлексії,
+  першопричина зберігається в `getCause()`.
+- `CsvExporter` — універсальний експортер: збирає анотовані поля класу й суперкласів
+  через рефлексію, сортує за Java-іменем, екранує кому, лапки й перенесення,
+  пише UTF-8 через `Files` з перезаписом. Предметних класів не знає.
+- `CsvParser` — машина станів над усім документом: кома й перенесення в лапках є даними.
+- `UtilityReadingRecord` — плоский запис варіанта 9 (meter String, date LocalDate,
+  value і tariff double) з `from(UtilityReading)`, `fromFields`, `readCsv` та equals/hashCode.
+  Поліморфна ієрархія не анотується, щоб CSV мав рівно чотири стовпці.
+
+Заголовок CSV визначається порядком імен полів date, meter, tariff, value:
+
+```text
+дата,лічильник,тариф,значення
+2026-09-01,Електроенергія,4.32,120.5
+2026-09-01,"Вода, гаряча",98.5,3.2
+2026-09-01,"Газ ""Схід""",7.96,25.0
+```
+
+Файл лише із заголовком — порожній набір; повністю порожній файл, хибний заголовок,
+кількість полів, число, дата чи незакриті лапки дають DataStorageException
+з номером CSV-запису. Роздільник записів — системний (CRLF на Windows, LF на Unix),
+читаються обидва.
+
 ## Предметна задача — варіант 9
 
 Консольна програма для комунальних показників. Вхід — файл UTF-8
@@ -181,12 +214,14 @@ Maven записує результати в `target/`, який не входи
 
 ```bash
 ./mvnw clean verify
-java -jar target/lab-java-1.3.0-all.jar
-java -jar target/lab-java-1.3.0-all.jar --help
-java -jar target/lab-java-1.3.0-all.jar --version
-java -jar target/lab-java-1.3.0-all.jar --input data/input.csv --output out/report.txt
-java -jar target/lab-java-1.3.0-all.jar --analytics
-java -jar target/lab-java-1.3.0-all.jar --analytics --input data/analytics.csv --output out/analytics-report.txt
+java -jar target/lab-java-1.4.0-all.jar
+java -jar target/lab-java-1.4.0-all.jar --help
+java -jar target/lab-java-1.4.0-all.jar --version
+java -jar target/lab-java-1.4.0-all.jar --input data/input.csv --output out/report.txt
+java -jar target/lab-java-1.4.0-all.jar --analytics
+java -jar target/lab-java-1.4.0-all.jar --analytics --input data/analytics.csv --output out/analytics-report.txt
+java -jar target/lab-java-1.4.0-all.jar --export
+java -jar target/lab-java-1.4.0-all.jar --export --input data/storage.csv --output out/readings.csv
 ```
 
 Звичайний запуск читає `data/input.csv` і записує `out/report.txt` відносно
@@ -199,7 +234,12 @@ java -jar target/lab-java-1.3.0-all.jar --analytics --input data/analytics.csv -
 та --input/--output не впливає на результат. Прапорець не приймає значення
 та не може повторюватися. Без нього діє стандартний режим.
 
-Режим `--version` виводить `lab-java 1.3.0`.
+`--export` за замовчуванням читає `data/storage.csv` (старий формат із `;`),
+записує `out/readings.csv` (кома, заголовок), читає його назад і виводить підсумок
+round-trip. Він несумісний з `--analytics` і не повторюється. Помилка запису чи
+читання CSV дає код 1 і повідомлення з причиною.
+
+Режим `--version` виводить `lab-java 1.4.0`.
 Shade Plugin створює окремий `*-all.jar` з головним класом і залежностями
 застосунку. JUnit не включається, оскільки має scope `test`.
 Версія надходить із `pom.xml` через поле `Implementation-Version` маніфесту.
@@ -243,6 +283,18 @@ Shade Plugin створює окремий `*-all.jar` з головним кл�
 Рядок 8: Помилка: споживання та тариф не можуть бути від’ємними
 ```
 
+Для `--export`:
+
+```text
+Записів у сховищі: 6
+Заголовок: дата,лічильник,тариф,значення
+Фізичних рядків CSV: 7
+Відновлених об'єктів: 6
+Round-trip: true
+Помилок: 1
+Рядок 7: Помилка: споживання або тариф має неправильний числовий формат
+```
+
 ## Організація роботи
 
 - `main` — прийняті й перевірені зміни.
@@ -267,6 +319,7 @@ Shade Plugin створює окремий `*-all.jar` з головним кл�
 [PR #37](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/pull/37)
 містить зміни лабораторної №4. Прийнятий стан фіксується тегом
 [v1.3.0](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/tree/v1.3.0).
+Лабораторна №5 виконується в `lab05` за Issues #38–#45; прийнятий стан фіксується тегом v1.4.0.
 
 ## Тестування та CI
 
@@ -302,21 +355,26 @@ SpotBugs аналізує байт-код і зупиняє збірку при 
 межі порога й N, другий критерій сортування, повтори, порожній пошук та
 окрема перевірка незмінності джерела. Запуски з типовими шляхами тестуються
 в окремому Java-процесі в тимчасовій теці, не перезаписуючи користувацькі звіти.
+Лабораторна №5 додає 95 перевірок: RepositoryTest (10), CsvParserTest (19),
+CsvExporterTest (20, зокрема клас іншої предметної області), UtilityReadingRecordTest (33,
+round-trip, помилки з cause) та ExportCliTest (13). Разом — 415.
 
 Workflow `.github/workflows/ci.yml` запускається після push та при відкритті
 або оновленні Pull Request. На кожній із трьох ОС він готує JDK 21 Temurin
 і виконує `clean verify` через Wrapper. Залежності Maven кешуються.
 CI компілює код, запускає тести, пакує JAR і виконує SpotBugs, після чого
-запускає виконуваний JAR у стандартному та аналітичному режимах, звіряє
-консоль із файлами й перевіряє, що `--version` відповідає версії POM.
+запускає виконуваний JAR у стандартному, аналітичному та експортному режимах, звіряє
+консоль із файлами, перевіряє CSV (заголовок, екранування, CRLF на Windows і LF на Unix)
+і те, що `--version` відповідає версії POM.
 Кожна ОС публікує `*-all.jar` як артефакт із назвою
-`jar-<ОС>-<номер запуску>`. На сторінці успішного запуску Actions завантажте
+`jar-<ОС>-<номер запуску>`, а створений CSV — як `csv-<ОС>-<номер запуску>`. На сторінці успішного запуску Actions завантажте
 артефакт у секції Artifacts, розпакуйте ZIP і запустіть JAR через Java 21.
 Номер запуску CI не є версією програми. Git-тег `v1.0.0` фіксує прийняту
 версію лабораторної №1 після merge фінальних правок.
 Тег лабораторної №2 — `v1.1.0` — зберігає її прийнятий стан.
 Релізний тег лабораторної №3 — `v1.2.0`; старі теги не пересуваються.
 Релізний тег лабораторної №4 — v1.3.0; попередні теги незмінні.
+Релізний тег лабораторної №5 — v1.4.0.
 Badge вище показує стан стабільної гілки `main`. Стан змін до merge дивіться
 в перевірках Pull Request.
 
@@ -325,5 +383,5 @@ Badge вище показує стан стабільної гілки `main`. �
 
 ```powershell
 $OutputEncoding = [Console]::OutputEncoding = [System.Text.UTF8Encoding]::new()
-java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar target/lab-java-1.3.0-all.jar --analytics
+java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar target/lab-java-1.4.0-all.jar --analytics
 ```
