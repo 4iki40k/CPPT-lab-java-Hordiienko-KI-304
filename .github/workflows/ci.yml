@@ -61,6 +61,15 @@ jobs:
             throw 'Analytics console and file reports differ'
           }
           Write-Output $analytics
+          $export = java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName --export
+          if ($LASTEXITCODE -ne 0) { throw 'Export JAR launch failed' }
+          if ($export -cnotcontains 'Записів у сховищі: 6' -or $export -cnotcontains 'Round-trip: true' -or $export -cnotcontains 'Помилок: 1') {
+            throw 'Unexpected export summary'
+          }
+          $csv = [System.IO.File]::ReadAllText((Resolve-Path 'out/readings.csv'), [System.Text.UTF8Encoding]::new($false))
+          if (-not $csv.StartsWith("дата,лічильник,тариф,значення`r`n")) { throw 'Unexpected CSV header or line separator' }
+          if (-not $csv.Contains('"Вода, гаряча"') -or -not $csv.Contains('"Газ ""Схід"""')) { throw 'CSV escaping failed' }
+          Write-Output $export
           java '-Dstdout.encoding=UTF-8' '-Dstderr.encoding=UTF-8' -jar $jars[0].FullName --help
           if ($LASTEXITCODE -ne 0) { throw 'JAR help command failed' }
           $version = .\mvnw.cmd -q help:evaluate '-Dexpression=project.version' '-DforceStdout'
@@ -88,6 +97,15 @@ jobs:
           echo "$analytics" | grep -Fx 'Сума: 310.00'
           echo "$analytics" | grep -Fx 'Помилок: 2'
           echo "$analytics"
+          export_summary=$(java -jar "${jars[0]}" --export)
+          echo "$export_summary" | grep -Fx 'Записів у сховищі: 6'
+          echo "$export_summary" | grep -Fx 'Round-trip: true'
+          echo "$export_summary" | grep -Fx 'Помилок: 1'
+          test "$(head -n 1 out/readings.csv)" = 'дата,лічильник,тариф,значення'
+          grep -F '"Вода, гаряча"' out/readings.csv
+          grep -F '"Газ ""Схід"""' out/readings.csv
+          if grep -q $'\r' out/readings.csv; then echo 'Unexpected CR in Unix CSV'; exit 1; fi
+          echo "$export_summary"
           java -jar "${jars[0]}" --help
           version=$(./mvnw -q help:evaluate -Dexpression=project.version -DforceStdout)
           actual=$(java -jar "${jars[0]}" --version)
@@ -99,4 +117,11 @@ jobs:
         with:
           name: jar-${{ matrix.os }}-${{ github.run_number }}
           path: target/*-all.jar
+          if-no-files-found: error
+
+      - name: Upload exported CSV
+        uses: actions/upload-artifact@v4
+        with:
+          name: csv-${{ matrix.os }}-${{ github.run_number }}
+          path: out/readings.csv
           if-no-files-found: error
