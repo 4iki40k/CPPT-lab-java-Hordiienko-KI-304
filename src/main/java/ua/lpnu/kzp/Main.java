@@ -5,11 +5,10 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-/** Стандартний та аналітичний звіти про комунальні показники, варіант 9. */
+/** Стандартний та аналітичний звіти й CSV-експорт комунальних показників, варіант 9. */
 public final class Main
 {
     /** Забороняє створення об'єктів службового класу з точкою входу. */
@@ -20,7 +19,7 @@ public final class Main
     /**
      * Запускає програму; помилки аргументів або файлів дають ненульовий код завершення.
      *
-     * @param args параметри --help, --version, --analytics, --input та --output
+     * @param args параметри --help, --version, --analytics, --export, --input та --output
      */
     public static void main(String[] args)
     {
@@ -43,10 +42,11 @@ public final class Main
     {
         if (args.length == 1 && "--help".equals(args[0]))
         {
-            out.printf("Використання: java -jar <файл.jar> [--analytics] [--input <файл>] [--output <файл>]%n");
+            out.printf("Використання: java -jar <файл.jar> [--analytics] [--export] [--input <файл>] [--output <файл>]%n");
             out.printf("  --analytics  Аналітичний режим%n");
-            out.printf("  --input      CSV: типово data/input.csv або data/analytics.csv%n");
-            out.printf("  --output     Звіт: типово out/report.txt або out/analytics-report.txt%n");
+            out.printf("  --export     Експорт у CSV з комою та перевірка round-trip (несумісний з --analytics)%n");
+            out.printf("  --input      CSV: типово data/input.csv, data/analytics.csv або data/storage.csv%n");
+            out.printf("  --output     Звіт: типово out/report.txt, out/analytics-report.txt або out/readings.csv%n");
             out.printf("  --help       Показати довідку (окремий режим)%n");
             out.printf("  --version    Показати версію (окремий режим)%n");
             return 0;
@@ -63,6 +63,7 @@ public final class Main
             Path input = null;
             Path output = null;
             boolean analytics = false;
+            boolean export = false;
             boolean inputSpecified = false;
             boolean outputSpecified = false;
             for (int index = 0; index < args.length; index++)
@@ -76,6 +77,16 @@ public final class Main
                     }
 
                     analytics = true;
+                    continue;
+                }
+                if ("--export".equals(option))
+                {
+                    if (export)
+                    {
+                        throw new IllegalArgumentException("Параметр --export указано повторно");
+                    }
+
+                    export = true;
                     continue;
                 }
                 if (!"--input".equals(option) && !"--output".equals(option))
@@ -107,14 +118,19 @@ public final class Main
                 }
             }
 
+            if (analytics && export)
+            {
+                throw new IllegalArgumentException("Параметри --analytics і --export несумісні");
+            }
+
             if (input == null)
             {
-                input = Path.of("data", analytics ? "analytics.csv" : "input.csv");
+                input = Path.of("data", analytics ? "analytics.csv" : export ? "storage.csv" : "input.csv");
             }
 
             if (output == null)
             {
-                output = Path.of("out", analytics ? "analytics-report.txt" : "report.txt");
+                output = Path.of("out", analytics ? "analytics-report.txt" : export ? "readings.csv" : "report.txt");
             }
 
             // Не дозволяємо випадково перезаписати вхідний CSV звітом.
@@ -123,6 +139,11 @@ public final class Main
                 throw new IllegalArgumentException("Вхідний файл і файл звіту мають бути різними");
             }
             List<String> lines = Files.readAllLines(input, StandardCharsets.UTF_8);
+            if (export)
+            {
+                out.print(exportReadings(lines, output));
+                return 0;
+            }
             String report = analytics ? buildAnalyticsReport(lines) : buildReport(lines);
             writeReport(output, report);
             out.print(report);
@@ -138,6 +159,45 @@ public final class Main
             err.printf("Помилка роботи з файлами: %s%n", exception.getMessage());
             return 1;
         }
+        catch (DataStorageException exception)
+        {
+            Throwable cause = exception.getCause();
+            err.printf("Помилка збереження даних: %s%s%n", exception.getMessage(), cause == null ? "" : " (причина: " + cause + ")");
+            return 1;
+        }
+    }
+
+    /**
+     * Зберігає прийняті показники в CSV, читає файл назад і порівнює відновлені записи з початковими.
+     *
+     * @param lines рядки вхідного файла у форматі meter;date;value;tariff
+     * @param output шлях до CSV-файла експорту
+     * @return підсумок експорту з результатом round-trip та діагностикою вхідних рядків
+     * @throws DataStorageException якщо CSV неможливо записати, прочитати або відновити
+     */
+    static String exportReadings(List<String> lines, Path output) throws DataStorageException
+    {
+        ReadingBatch batch = processLines(lines);
+        Repository<UtilityReadingRecord> repository = new Repository<>();
+        batch.readings().forEach(reading -> repository.add(UtilityReadingRecord.from(reading)));
+
+        List<UtilityReadingRecord> original = repository.all();
+        CsvExporter.write(output, UtilityReadingRecord.class, original);
+        List<UtilityReadingRecord> restored = UtilityReadingRecord.readCsv(output);
+
+        String csv;
+        try
+        {
+            csv = Files.readString(output, StandardCharsets.UTF_8);
+        }
+        catch (IOException exception)
+        {
+            throw new DataStorageException("Не вдалося прочитати CSV: " + output, exception);
+        }
+        long physicalLines = csv.lines().count();
+
+        return String.format(Locale.ROOT, "Записів у сховищі: %d%nЗаголовок: %s%nФізичних рядків CSV: %d%nВідновлених об'єктів: %d%nRound-trip: %s%nПомилок: %d%n%s",
+                original.size(), String.join(",", CsvExporter.header(UtilityReadingRecord.class)), physicalLines, restored.size(), original.equals(restored), batch.errorCount(), batch.errors());
     }
 
     /**
@@ -227,7 +287,7 @@ public final class Main
     /**
      * Зберігає прийняті записи, сумарні показники та діагностику.
      *
-     * @param readings прийняті записи
+     * @param readings знімок прийнятих записів сховища
      * @param totals суми споживання та вартості, перевірені на переповнення
      * @param errorCount кількість відхилених рядків
      * @param errors текст причин пропуску з номерами рядків
@@ -249,7 +309,7 @@ public final class Main
      */
     private static ReadingBatch processLines(List<String> lines)
     {
-        List<UtilityReading> readings = new ArrayList<>();
+        Repository<UtilityReading> readings = new Repository<>();
         int errorCount = 0;
         double totalValue = 0.0;
         double totalCost = 0.0;
@@ -281,6 +341,6 @@ public final class Main
             }
         }
 
-        return new ReadingBatch(readings, new ConsumptionCost(totalValue, totalCost), errorCount, errors.toString());
+        return new ReadingBatch(readings.all(), new ConsumptionCost(totalValue, totalCost), errorCount, errors.toString());
     }
 }
