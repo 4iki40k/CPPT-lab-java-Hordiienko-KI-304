@@ -244,7 +244,7 @@ CI на Windows, Ubuntu та macOS додатково запускає --export 
 | [#45](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/issues/45) | Документація й здача | README, REPORT, javadoc, PR і реліз v1.4.0 |
 
 Коміт реалізації — d657267, нових тестів — fe131e4, версії й CI — 8ef4157.
-PR створено з lab05 у main з Closes #38–#45. Після CI та розбору коду
+[PR #46](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/pull/46) створено з lab05 у main з Closes #38–#45. Після CI та розбору коду
 прийнятий merge-коміт фіксується тегом v1.4.0.
 
 Огляд асистентом не виявив блокувальних технічних дефектів: експортер не прив'язаний

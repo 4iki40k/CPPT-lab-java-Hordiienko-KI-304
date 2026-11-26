@@ -320,7 +320,9 @@ Round-trip: true
 [PR #37](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/pull/37)
 містить зміни лабораторної №4. Прийнятий стан фіксується тегом
 [v1.3.0](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/tree/v1.3.0).
-Лабораторна №5 виконується в `lab05` за Issues #38–#45; прийнятий стан фіксується тегом v1.4.0.
+Лабораторна №5 виконується в `lab05` за Issues #38–#45.
+[PR #46](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/pull/46)
+містить зміни лабораторної №5. Прийнятий стан фіксується тегом v1.4.0.
 
 ## Тестування та CI
 
