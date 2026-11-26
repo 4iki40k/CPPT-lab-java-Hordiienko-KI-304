@@ -1,7 +1,7 @@
 # Звіт до лабораторної роботи №5
 
-> Звіт до версії 1.4.0. Локальні перевірки завершено; результати CI та розбір
-> ключових рішень вносяться після push. Прийнятий результат фіксується тегом v1.4.0 після merge PR.
+> Звіт до версії 1.4.0. Локальні перевірки та CI завершено; розбір ключових рішень
+> вноситься перед merge. Прийнятий результат фіксується тегом v1.4.0 після merge PR.
 
 ## 1. Тема, номер і варіант
 
@@ -192,7 +192,7 @@ Double.toString відновлюється точно, тому 0.1 + 0.2 і Dou
 JAR фактично запущено у трьох режимах: стандартний і аналітичний звіти не змінилися,
 --export дає Round-trip: true, --version показує 1.4.0.
 Javadoc всього пакета з приватними елементами згенеровано без попереджень.
-Результати CI вносяться після push.
+Результати CI наведено в розділі 11.
 
 ## 11. Інфраструктура й запуск
 
@@ -214,6 +214,21 @@ java -jar target/lab-java-1.4.0-all.jar --export --input data/storage.csv --outp
 CI на Windows, Ubuntu та macOS додатково запускає --export із JAR, перевіряє
 підсумок, заголовок, екранування й роздільник рядків: CRLF на Windows, LF на Unix.
 Окрім jar-<ОС>-<номер>, публікується артефакт csv-<ОС>-<номер> зі створеним CSV.
+
+[Запуск CI №45812356483](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/45812356483)
+для коміту e3cdc39 успішний: на кожній ОС 415 тестів без помилок, SpotBugs — 0 дефектів,
+три режими JAR працюють, --export дає Round-trip: true, CSV має CRLF на Windows
+і LF на Ubuntu та macOS, --version показує lab-java 1.4.0.
+
+| ОС | Результат | JAR | CSV |
+| --- | --- | --- | --- |
+| Windows | Успішно | [jar-windows-latest-43](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/45812356483/artifacts/15112588658) | [csv-windows-latest-43](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/45812356483/artifacts/15112748637) |
+| Ubuntu | Успішно | [jar-ubuntu-latest-43](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/45812356483/artifacts/15113927040) | [csv-ubuntu-latest-43](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/45812356483/artifacts/15113542304) |
+| macOS | Успішно | [jar-macos-latest-43](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/45812356483/artifacts/15113522037) | [csv-macos-latest-43](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/45812356483/artifacts/15113457047) |
+
+Число 43 — номер CI-збірки, не версія. Артефакти мають обмежений строк
+зберігання GitHub. GitHub попереджає про застарілий Node.js 20 в upload-artifact@v4;
+на результат це не впливає.
 
 ## 12. GitHub Issues і Pull Request
 

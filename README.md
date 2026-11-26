@@ -29,7 +29,8 @@ Java-частина курсу «Кросплатформні засоби пр�
 GitHub Actions налаштовано на `clean verify`, запуск JAR і публікацію артефактів
 на Ubuntu, Windows і macOS.
 [Базова версія лабораторної №1 перевірена на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40375923177).
-Поточна реалізація має 415 тестів.
+Поточна реалізація має 415 тестів;
+[CI лабораторної №5 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/45812356483).
 [CI попередньої лабораторної №4 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40794414059).
 [CI попередньої лабораторної №3 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40613481159).
 [CI попередньої лабораторної №2 успішний на трьох ОС](https://github.com/4iki40k/CPPT-lab-java-Hordiienko-KI-304/actions/runs/40417462068).
